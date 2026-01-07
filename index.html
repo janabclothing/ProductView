@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>J△N△B — Product Page</title>
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --panel:#f6f6f6;
+      --text:#111111;
+      --muted:#6b6b6b;
+      --line:rgba(0,0,0,.10);
+      --shadow: 0 14px 30px rgba(0,0,0,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      background:rgba(255,255,255,.82);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .wrap{max-width:1180px; margin:0 auto; padding:14px 16px;}
+    .toprow{display:flex; align-items:center; gap:10px;}
+    .brand{font-weight:1000; letter-spacing:.6px;}
+    .spacer{flex:1}
+    .btn{
+      appearance:none; border:1px solid var(--line);
+      background:#111; color:#fff;
+      padding:10px 12px; border-radius:12px;
+      font-weight:900; cursor:pointer;
+      text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .btn.ghost{background:transparent; color:#111;}
+    .btn:hover{filter:brightness(.97)}
+    .btn:active{transform:translateY(1px)}
+
+    .grid{
+      display:grid; gap:18px;
+      grid-template-columns: 1fr;
+      padding:18px 0 40px;
+    }
+    @media(min-width:980px){
+      .grid{grid-template-columns: 1.05fr .95fr;}
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .pad{padding:16px}
+    .title{
+      margin:0;
+      font-size:28px;
+      line-height:1.1;
+      font-weight:950;
+      letter-spacing:-0.4px;
+    }
+    .meta{
+      margin-top:10px;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .badge{
+      display:inline-flex; align-items:center;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:12px; font-weight:900;
+    }
+
+    /* Pricing */
+    .priceBox{
+      margin-top:14px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+    }
+    .priceTop{
+      display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    }
+    .bigPrice{
+      font-size:24px; font-weight:1000; letter-spacing:-0.2px;
+    }
+    .dealPill{
+      display:inline-flex; align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#f7f7f7;
+      font-size:12px; font-weight:950;
+    }
+    .priceNote{
+      margin-top:8px;
+      color:#333;
+      font-size:14px;
+      line-height:1.6;
+    }
+    .priceGrid{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:8px;
+    }
+    @media(min-width:520px){
+      .priceGrid{grid-template-columns: 1fr 1fr;}
+    }
+    .priceCard{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+      background:#fff;
+    }
+    .priceCard .label{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.2px;
+      text-transform:uppercase;
+    }
+    .priceCard .value{
+      margin-top:6px;
+      font-weight:1000;
+      font-size:18px;
+    }
+    .muted{color:var(--muted)}
+    .hr{height:1px; background:var(--line); margin:14px 0}
+    .sectionTitle{font-weight:950; font-size:18px; margin:0 0 10px 0;}
+    .desc{color:#222; line-height:1.7; font-size:15px;}
+    .small{font-size:13px; color:var(--muted)}
+
+    /* Gallery */
+    .gallery{display:grid; gap:12px; padding:16px;}
+    .mainImg{
+      position:relative;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      aspect-ratio: 4/5;
+      user-select:none;
+    }
+    .track{height:100%; display:flex; transition: transform .35s ease;}
+    .slide{min-width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#fff;}
+    .slide img{width:100%; height:100%; object-fit:cover; display:block;}
+
+    .nav{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:space-between;
+      pointer-events:none;
+      padding:0 10px;
+    }
+    .arrow{
+      pointer-events:auto;
+      width:42px; height:42px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.9);
+      cursor:pointer;
+      font-size:22px;
+      display:grid; place-items:center;
+    }
+    .dots{
+      position:absolute; left:50%; bottom:10px;
+      transform:translateX(-50%);
+      display:flex; gap:6px;
+      background:rgba(255,255,255,.75);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:6px 8px;
+    }
+    .dot{width:8px; height:8px; border-radius:999px; background:rgba(0,0,0,.25); cursor:pointer;}
+    .dot.active{background:#111}
+
+    .thumbs{display:grid; grid-template-columns: repeat(5, 1fr); gap:8px;}
+    .thumb{
+      aspect-ratio: 1/1;
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#fff;
+      cursor:pointer;
+      opacity:.85;
+      transition: opacity .15s ease, transform .15s ease;
+    }
+    .thumb:hover{opacity:1; transform:translateY(-1px)}
+    .thumb.active{outline:2px solid #111; opacity:1}
+    .thumb img{width:100%; height:100%; object-fit:cover; display:block}
+
+    /* Video */
+    .videoBox{
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
+    }
+    .videoWrap{
+      position:relative;
+      width:100%;
+      aspect-ratio:16/9;
+      background:#000;
+    }
+    .videoWrap iframe, .videoWrap video{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      border:0;
+    }
+
+    /* Sizes */
+    .sizes{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    @media(min-width:520px){
+      .sizes{grid-template-columns:1fr 1fr;}
+    }
+    .sizeCard{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+    .sizeName{font-weight:950; margin:0 0 8px 0; font-size:15px;}
+    .sizeList{margin:0; padding-left:18px; color:#222; line-height:1.7; font-size:14px;}
+
+    /* FAQ */
+    .faq{display:flex; flex-direction:column; gap:10px;}
+    .faqItem{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      overflow:hidden;
+    }
+    .faqQ{
+      width:100%;
+      padding:14px 14px;
+      background:transparent;
+      border:0;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      font-weight:900;
+      color:#111;
+      text-align:left;
+      font-size:15px;
+    }
+    .faqA{
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .28s ease, padding .18s ease, opacity .2s ease;
+      padding:0 14px;
+      opacity:0;
+      color:#333;
+      line-height:1.65;
+      font-size:14px;
+    }
+    .faqItem.open .faqA{
+      max-height: 520px;
+      padding:0 14px 14px;
+      opacity:1;
+    }
+    .plus{
+      width:30px; height:30px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      display:grid; place-items:center;
+      font-weight:950;
+      color:#111;
+      background:#f7f7f7;
+      flex:0 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="wrap">
+      <div class="toprow">
+        <div class="brand">J△N△B</div>
+        <div class="spacer"></div>
+        <a class="btn ghost" href="#">Back</a>
+        <a class="btn" href="#order">Order Now</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <div class="grid">
+
+      <!-- LEFT: Gallery -->
+      <section class="card">
+        <div class="gallery">
+          <div class="mainImg" id="mainImg">
+            <div class="track" id="track"></div>
+
+            <div class="nav">
+              <button class="arrow" id="prev" type="button" aria-label="Previous">‹</button>
+              <button class="arrow" id="next" type="button" aria-label="Next">›</button>
+            </div>
+
+            <div class="dots" id="dots"></div>
+          </div>
+
+          <div class="thumbs" id="thumbs"></div>
+          <div class="small">Tip: thumbnails pe click kar ke image change kar sakte hain.</div>
+        </div>
+      </section>
+
+      <!-- RIGHT: Details -->
+      <section class="card">
+        <div class="pad">
+          <h1 class="title" id="pTitle">Premium Product Name</h1>
+
+          <div class="meta">
+            <span class="badge">Cash on Delivery</span>
+            <span class="badge">Delivery Charges: 50 PKR</span>
+            <span class="badge">Sizes: Medium / Large</span>
+          </div>
+
+          <!-- PRICE (CLEAR FOR CUSTOMER) -->
+          <div class="priceBox" aria-label="Pricing">
+            <div class="priceTop">
+              <div class="bigPrice">PKR <span id="singlePrice">1200</span> <span class="muted">/ piece</span></div>
+              <div class="dealPill">Buy 2+ → PKR <span id="bulkPrice">1000</span>/piece</div>
+            </div>
+
+            <div class="priceNote">
+              <b>Offer:</b> Agar aap <b>2 ya us se zyada</b> pieces order karein, to price <b>PKR 1000 per piece</b> ho jata hai.
+              <br />
+              <span class="muted">Delivery charges: PKR 50 (separate)</span>
+            </div>
+
+            <div class="priceGrid">
+              <div class="priceCard">
+                <div class="label">1 Piece Price</div>
+                <div class="value">PKR 1200 <span class="muted">/ piece</span></div>
+              </div>
+              <div class="priceCard">
+                <div class="label">2+ Pieces Price</div>
+                <div class="value">PKR 1000 <span class="muted">/ piece</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <h3 class="sectionTitle">Sizes</h3>
+          <div class="sizes">
+            <div class="sizeCard">
+              <p class="sizeName">Large</p>
+              <ul class="sizeList">
+                <li>Length: 26 inch</li>
+                <li>Chest: 18 inch</li>
+                <li>Arms: 22 inch</li>
+              </ul>
+            </div>
+
+            <div class="sizeCard">
+              <p class="sizeName">Medium</p>
+              <ul class="sizeList">
+                <li>Length: 25 inches</li>
+                <li>Chest: 16 inches</li>
+                <li>Arms: 22 inches</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <h3 class="sectionTitle">Description</h3>
+          <div class="desc" id="pDesc">
+            Iska stuff <b>Rib Knit</b> hai — ye soft, stretchable aur body-friendly fabric hota hai.
+            Jis tarah images me halki si <b>ribbed lines</b> dikh rahi hain, exact waise hi lines real product me bhi hoti hain.
+            <br><br>
+            <b>Rib Knit ki khas baat:</b>
+            <ul>
+              <li>Stretch bohat smooth hota hai (tight feel nahi deta)</li>
+              <li>Shape lose nahi hoti</li>
+              <li>Daily wear me comfortable rehta hai</li>
+              <li>Fitting naturally achi lagti hai</li>
+            </ul>
+          </div>
+
+          <div class="hr"></div>
+
+          <h3 class="sectionTitle">Product Video</h3>
+          <div class="videoBox">
+            <div class="videoWrap">
+              <iframe
+  id="videoEmbed"
+  src="https://streamable.com/e/9dx0mv"
+  title="Product Video"
+  allow="autoplay; fullscreen; picture-in-picture"
+  allowfullscreen>
+</iframe>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <h3 class="sectionTitle">FAQ</h3>
+          <div class="faq" id="faq">
+            <div class="faqItem">
+              <button class="faqQ" type="button">
+                <span>Cheez wesi hi hogi jesi show ho rahi hai?</span>
+                <span class="plus">+</span>
+              </button>
+              <div class="faqA">
+                Bilkul clear baat karun to <b>19–20 ka thoda sa farq</b> ho sakta hai.
+                Quality honestly aap ko <b>over-expect</b> nahi karni chahiye, lekin yeh bhi koi lightweight ya useless cheez nahi hai.
+                <br><br>
+                <b>PKR 1000 ke budget</b> me jo product ka standard hona chahiye, yeh exactly wohi deliver karta hai — <b>stable, wearable aur daily-use friendly</b>.
+                Hamne ye product pehle bhi bohat logon ko diya hai aur reviews honestly bohat ache mile hain.
+              </div>
+            </div>
+
+            <div class="faqItem">
+              <button class="faqQ" type="button">
+                <span>Delivery charges kitne hain?</span>
+                <span class="plus">+</span>
+              </button>
+              <div class="faqA">
+                Delivery charges <b>50 PKR</b> hain.
+              </div>
+            </div>
+
+            <div class="faqItem">
+              <button class="faqQ" type="button">
+                <span>Sizes kaun se available hain?</span>
+                <span class="plus">+</span>
+              </button>
+              <div class="faqA">
+                Is product me sirf <b>Medium</b> aur <b>Large</b> sizes available hain.
+              </div>
+            </div>
+
+            <div class="faqItem">
+              <button class="faqQ" type="button">
+                <span>Cash on Delivery available hai?</span>
+                <span class="plus">+</span>
+              </button>
+              <div class="faqA">
+                Haan, <b>Cash on Delivery</b> available hai.
+              </div>
+            </div>
+
+            <div class="faqItem">
+              <button class="faqQ" type="button">
+                <span>Price zyada kyun show ho raha hai?</span>
+                <span class="plus">+</span>
+              </button>
+              <div class="faqA">
+                Main samajh sakta hoon aap ka point — lekin price ka main reason ye hai ke hum all over Pakistan delivery provide karte hain, wo bhi aap ke ghar tak. Sirf delivery company hi ham se Rs 400 charge karti hai. Agar hum price aur kam kar dein to honestly hamare liye kuch bachta hi nahi — is liye hamne price jitna possible ho sakay utna reasonable rakha hua hai.                 Product ki quality bhi waisi hi hai jaisi is budget me honi chahiye — pehnne ke laayak, good material, aur long-lasting. Is liye overall cheez price ke hisaab se bilkul worth it hai.
+              </div>
+            </div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <div id="order">
+              <a class="btn" href="https://wa.me/923272490992" target="_blank" rel="noopener">
+                Order on WhatsApp
+              </a>
+              <div class="small" style="margin-top:10px;">
+                WhatsApp: 0327-2490992
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <script>
+      // ====== CHANGE THESE IMAGES ======
+      // Apni product images yahan paste kar dein
+      const IMAGES = [
+        "https://i.ibb.co/mFRvyNpF/Gemini-Generated-Image-b4ahtrb4ahtrb4ah.png",
+        "https://i.ibb.co/4n2T4W3S/Gemini-Generated-Image-fmd2lqfmd2lqfmd2.png",
+        "https://i.ibb.co/3mk7g70V/Gemini-Generated-Image-rdnqknrdnqknrdnq.png",
+        "https://i.ibb.co/Q7Q68L1S/Gemini-Generated-Image-wclm80wclm80wclm.png"
+      ];
+
+      // ====== Gallery logic ======
+      const track = document.getElementById("track");
+      const dots = document.getElementById("dots");
+      const thumbs = document.getElementById("thumbs");
+      const prev = document.getElementById("prev");
+      const next = document.getElementById("next");
+      const mainImg = document.getElementById("mainImg");
+
+      let index = 0;
+
+      function render() {
+        track.innerHTML = IMAGES.map(src => `
+          <div class="slide"><img src="${src}" alt="Product image"></div>
+        `).join("");
+
+        dots.innerHTML = IMAGES.map((_, i) => `
+          <div class="dot ${i === 0 ? "active" : ""}" data-i="${i}"></div>
+        `).join("");
+
+        thumbs.innerHTML = IMAGES.map((src, i) => `
+          <div class="thumb ${i === 0 ? "active" : ""}" data-i="${i}">
+            <img src="${src}" alt="Thumbnail">
+          </div>
+        `).join("");
+
+        dots.querySelectorAll(".dot").forEach(d => d.addEventListener("click", () => go(+d.dataset.i)));
+        thumbs.querySelectorAll(".thumb").forEach(t => t.addEventListener("click", () => go(+t.dataset.i)));
+
+        go(0, false);
+      }
+
+      function go(i, animate = true) {
+        index = (i + IMAGES.length) % IMAGES.length;
+        if (!animate) track.style.transition = "none";
+        track.style.transform = `translateX(-${index * 100}%)`;
+        if (!animate) requestAnimationFrame(() => track.style.transition = "");
+
+        dots.querySelectorAll(".dot").forEach((d, di) => d.classList.toggle("active", di === index));
+        thumbs.querySelectorAll(".thumb").forEach((t, ti) => t.classList.toggle("active", ti === index));
+      }
+
+      prev.addEventListener("click", () => go(index - 1));
+      next.addEventListener("click", () => go(index + 1));
+
+      // Swipe support (mobile)
+      let startX = 0, dragging = false;
+      mainImg.addEventListener("touchstart", (e) => { dragging = true; startX = e.touches[0].clientX; }, { passive: true });
+      mainImg.addEventListener("touchend", (e) => {
+        if (!dragging) return;
+        dragging = false;
+        const endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : startX;
+        const dx = endX - startX;
+        const threshold = Math.min(120, mainImg.clientWidth * 0.18);
+        if (dx > threshold) go(index - 1);
+        else if (dx < -threshold) go(index + 1);
+      }, { passive: true });
+
+      // ====== FAQ Accordion ======
+      document.querySelectorAll(".faqItem").forEach(item => {
+        const btn = item.querySelector(".faqQ");
+        const plus = item.querySelector(".plus");
+        btn.addEventListener("click", () => {
+          const open = item.classList.toggle("open");
+          plus.textContent = open ? "−" : "+";
+        });
+      });
+
+      render();
+
+      // OPTIONAL QUICK EDITS:
+      // document.getElementById("pTitle").textContent = "Your Product Name";
+      // document.getElementById("videoEmbed").src = "https://www.youtube.com/embed/VIDEO_ID";
+    </script>
+</body>
+</html>
+
+	
