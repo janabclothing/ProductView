@@ -1,4056 +1,579 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>JANAB – Inventory & Orders</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- Copper triangle favicon -->
-  <link
-    rel="icon"
-    type="image/svg+xml"
-    href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"%3E%3Cdefs%3E%3ClinearGradient id="g" x1="0" y1="1" x2="1" y2="0"%3E%3Cstop offset="0" stop-color="%23b45309"/%3E%3Cstop offset="0.5" stop-color="%23c05621"/%3E%3Cstop offset="1" stop-color="%23ea580c"/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width="64" height="64" rx="14" fill="%23111116"/%3E%3Cpath d="M32 10 L52 50 H12 Z" fill="url(%23g)"/%3E%3C/svg%3E'
-  />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>J△N△B — Product Page</title>
 
   <style>
-    :root {
-      --bg: #090604;
-      --bg-soft: #130e0a;
-      --card: #111827;
-      --border: #292524;
-      --text: #f3f4f6;
-      --muted: #e5e7eb;
-      --muted-soft: #d1d5db;
-      --accent: #c05621;
-      --accent-soft: rgba(192, 86, 33, 0.22);
-      --danger: #ef4444;
-      --danger-soft: rgba(239, 68, 68, 0.16);
-      --success: #22c55e;
-      --success-soft: rgba(34, 197, 94, 0.15);
-      --radius-card: 20px;
-      --radius-pill: 999px;
-      --shadow: 0 22px 45px rgba(15, 23, 42, 0.7);
-      --copper-soft: #f3e2d6;
-      --copper-softer: #f6ebe3;
-      --copper-strong: #e3c2a6;
-    }
-
-    body.light {
-      --bg: #f7f7f7;
-      --bg-soft: #f2f2f2;
-      --card: #ffffff;
-      --border: #d1d5db;
-      --text: #111827;
-      --muted: #6b7280;
-      --muted-soft: #9ca3af;
-      --accent: #111827;
-      --accent-soft: rgba(17, 24, 39, 0.08);
-      --danger: #b91c1c;
-      --danger-soft: rgba(185, 28, 28, 0.12);
-      --success: #166534;
-      --success-soft: rgba(22, 101, 52, 0.12);
-      --radius-card: 20px;
-      --radius-pill: 999px;
-      --shadow: 0 18px 38px rgba(17, 24, 39, 0.12);
-      --copper-soft: #f3f4f6;
-      --copper-softer: #f9fafb;
-      --copper-strong: #111827;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    body:not(.light) {
-      background: radial-gradient(circle at top, #23140b 0, #050609 55%, #020308 100%);
-    }
-
-    .shell {
-      max-width: 1340px;
-      margin: 0 auto;
-      padding: 18px 10px 36px;
-    }
-    @media (min-width: 1024px) {
-      .shell { padding: 24px 12px 40px; }
-    }
-
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      padding-bottom: 10px;
-      margin-bottom: 18px;
-      backdrop-filter: blur(18px);
-      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.80), transparent);
-    }
-    body:not(.light) .header {
-      background: linear-gradient(to bottom, rgba(9, 9, 11, 0.96), rgba(15, 23, 42, 0.92), transparent);
-    }
-
-    .header-inner {
-      max-width: 1340px;
-      margin: 0 auto;
-      padding: 12px 10px 0;
-    }
-    @media (min-width: 1024px) {
-      .header-inner { padding: 14px 12px 0; }
-    }
-
-    .header-card {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
-      gap: 20px;
-      align-items: flex-start;
-      border-radius: var(--radius-card);
-      border: 1px solid var(--border);
-      background:
-        radial-gradient(circle at top left, rgba(192, 86, 33, 0.18), transparent 55%),
-        radial-gradient(circle at bottom, #fefaf7, #f6ebe3 70%);
-      padding: 16px 18px 14px;
-      box-shadow: var(--shadow);
-    }
-    body:not(.light) .header-card {
-      background:
-        radial-gradient(circle at top left, rgba(192, 86, 33, 0.2), transparent 55%),
-        radial-gradient(circle at bottom, #020617, #020617 70%);
-    }
-    @media (max-width: 900px) {
-      .header-card {
-        grid-template-columns: 1fr;
-        padding: 14px 14px 12px;
-      }
-    }
-
-    .header-left {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-      min-width: 0;
-    }
-
-    .logo {
-      width: 44px;
-      height: 44px;
-      border-radius: 18px;
-      background:
-        radial-gradient(circle at 0 0, #fbe1c6 0, #f0c4a1 32%, transparent 70%),
-        radial-gradient(circle at 100% 0, #ea580c 0, #9a3412 45%, transparent 72%),
-        radial-gradient(circle at 50% 100%, #451a03 0, #020617 60%);
-      border: 1px solid rgba(148, 163, 184, 0.85);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 14px 32px rgba(120, 70, 30, 0.75);
-      flex-shrink: 0;
-    }
-    .logo-triangle {
-      width: 0;
-      height: 0;
-      border-left: 9px solid transparent;
-      border-right: 9px solid transparent;
-      border-bottom: 18px solid #fbbf24;
-      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
-    }
-
-    .brand-text { display:flex; flex-direction:column; gap:6px; min-width:0; }
-
-    .brand-title-row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
-    .brand-chip {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      border-radius: var(--radius-pill);
-      padding: 3px 9px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(255, 255, 255, 0.92);
-      color: #4b5563;
-    }
-    body:not(.light) .brand-chip {
-      background: rgba(15, 23, 42, 0.85);
-      color: var(--muted);
-    }
-
-    .brand-main {
-      font-size: 20px;
-      font-weight: 650;
-      letter-spacing: 0.02em;
-    }
-    .brand-sub {
-      font-size: 13px;
-      color: var(--muted);
-      max-width: 520px;
-    }
-
-    .status-pills {
-      margin-top: 4px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:5px;
-    }
-    .status-pill {
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:3px 8px;
-      border-radius:var(--radius-pill);
-      font-size:11px;
-      border:1px solid rgba(148,163,184,0.45);
-      background:var(--copper-softer);
-      color:#7c2d12;
-    }
-    body:not(.light) .status-pill {
-      background: rgba(15, 23, 42, 0.8);
-      color: var(--muted);
-    }
-    .status-pill-dot {
-      width:7px; height:7px; border-radius:999px;
-    }
-    .status-pill.new .status-pill-dot { background:#38bdf8;}
-    .status-pill.ready .status-pill-dot { background:#22c55e;}
-    .status-pill.dispatched-ready .status-pill-dot { background:#a855f7;}
-    .status-pill.dispatched .status-pill-dot { background:#f59e0b;}
-    .status-pill.delivered .status-pill-dot { background:#a3e635;}
-    .status-pill.returned .status-pill-dot { background:#f97316;}
-    .status-pill.cancelled .status-pill-dot { background:#9ca3af;}
-    .status-count {
-      font-weight:600;
-      margin-left:2px;
-    }
-
-    .header-right {
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      align-items:flex-end;
-      min-width: 240px;
-    }
-    @media (max-width: 900px) {
-      .header-right { align-items:stretch; }
-    }
-
-    .profit-row {
-      display:flex;
-      gap:12px;
-      align-items:center;
-    }
-    .profit-main {
-      display:flex;
-      flex-direction:column;
-      align-items:flex-end;
-      gap:3px;
-    }
-    .profit-label {
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:0.12em;
-      color:var(--muted-soft);
-    }
-    .profit-value {
-      font-size:20px;
-      font-weight:650;
-      font-variant-numeric:tabular-nums;
-    }
-    .profit-positive { color: var(--success); }
-    .profit-negative { color: var(--danger); }
-    .profit-neutral { color: var(--text); }
-
-    .profit-chip {
-      margin-top:2px;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:3px 9px;
-      font-size:11px;
-      border-radius:var(--radius-pill);
-      border:1px solid rgba(34,197,94,0.4);
-      background: var(--success-soft);
-      color: var(--success);
-      box-shadow: var(--shadow);
-    }
-    .profit-chip.loss {
-      border-color: rgba(239,68,68,0.5);
-      background: var(--danger-soft);
-      color: var(--danger);
-    }
-
-    @keyframes profitGlow {
-      0% { box-shadow: var(--shadow); transform: translateY(0); }
-      50% { box-shadow: 0 0 0 2px var(--copper-strong), 0 0 24px rgba(234,88,12,0.95); transform: translateY(-1px); }
-      100% { box-shadow: var(--shadow); transform: translateY(0); }
-    }
-    .profit-chip.glow {
-      animation: profitGlow 1s ease-in-out infinite;
-    }
-
-    .profit-sub {
-      font-size:11px;
-      color:var(--muted-soft);
-      text-align:right;
-    }
-    .profit-sub span { font-variant-numeric:tabular-nums;}
-
-    .header-actions {
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-
-    .header-meta {
-      display:flex;
-      gap:6px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      font-size:11px;
-      margin-top:2px;
-    }
-    @media (max-width: 900px) {
-      .header-meta { justify-content:flex-start; }
-    }
-
-    .pill-soft {
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:3px 9px;
-      border-radius:var(--radius-pill);
-      border:1px dashed var(--border);
-      background:var(--copper-softer);
-      color:#7c2d12;
-    }
-    body:not(.light) .pill-soft {
-      background:rgba(15,23,42,0.8);
-      color:var(--muted);
-    }
-    .dot { width:6px;height:6px;border-radius:99px;}
-    .dot.green { background:#22c55e;}
-
-    .message-area { margin-top:8px; }
-    .message {
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:5px 11px;
-      border-radius:var(--radius-pill);
-      border:1px solid rgba(148,163,184,0.55);
-      background:var(--copper-soft);
-      font-size:11px;
-      color:#7c2d12;
-    }
-    body:not(.light) .message {
-      background:rgba(15,23,42,0.75);
-      color:var(--muted);
-    }
-    .message.success {
-      border-color:rgba(34,197,94,0.6);
-      background:var(--success-soft);
-      color:var(--success);
-    }
-    .message.error {
-      border-color:rgba(239,68,68,0.6);
-      background:var(--danger-soft);
-      color:var(--danger);
-    }
-
-    /* Layout */
-    .grid {
-      display:grid;
-      grid-template-columns: minmax(0,1.2fr) minmax(0,1fr);
-      gap:20px;
-      align-items:stretch;
-    }
-    .col-left, .col-right {
-      display:flex;
-      flex-direction:column;
-      gap:20px;
-      min-width:0;
-    }
-    .col-right .card {
-      flex: 1;
-      min-height: 420px;
-      display:flex;
-      flex-direction:column;
-    }
-    .col-right .table-wrap {
-      flex:1;
-      overflow-y:auto;
-    }
-
-    @media (max-width: 960px) {
-      .grid { grid-template-columns:1fr; gap:16px; }
-      .col-left, .col-right { gap:16px; }
-      .col-right .card {
-        flex: none;
-        min-height: 0;
-      }
-      .col-right .table-wrap {
-        max-height: none;
-        overflow-y: visible;
-      }
-    }
-
-    .card {
-      border-radius:var(--radius-card);
-      border:1px solid var(--border);
-      background:var(--card);
-      box-shadow:var(--shadow);
-      padding:18px 18px 20px;
-    }
-    @media (max-width: 768px) {
-      .card { padding:14px 12px 16px; }
-    }
-
-    .card-header {
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:10px;
-      align-items:flex-start;
-    }
-    .card-title-block { display:flex;flex-direction:column;gap:4px; }
-    .card-kicker {
-      font-size:10px;
-      text-transform:uppercase;
-      letter-spacing:0.14em;
-      color:var(--muted-soft);
-    }
-    .card-title-row {
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-    .card-title {
-      font-size:14px;
-      text-transform:uppercase;
-      letter-spacing:0.08em;
-      font-weight:600;
-    }
-    .badge-soft {
-      font-size:11px;
-      padding:3px 8px;
-      border-radius:var(--radius-pill);
-      border:1px solid var(--border);
-      color:var(--muted);
-      background:var(--copper-softer);
-    }
-    body:not(.light) .badge-soft {
-      background:rgba(15,23,42,0.65);
-    }
-    .card-sub {
-      font-size:11px;
-      color:var(--muted);
-    }
-
-    /* Fields */
-    .field-grid {
-      display:grid;
-      grid-template-columns: repeat(3,minmax(0,1fr));
-      gap:10px;
-    }
-    @media (max-width:900px) {
-      .field-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-    }
-    @media (max-width:640px) {
-      .field-grid { grid-template-columns:1fr; }
-    }
-    .field { display:flex;flex-direction:column;gap:4px; }
-    .field label {
-      font-size:10px;
-      text-transform:uppercase;
-      letter-spacing:0.14em;
-      color:var(--muted-soft);
-    }
-    input[type=text],
-    input[type=number],
-    input[type=date],
-    textarea,
-    select {
-      border-radius:999px;
-      border:1px solid var(--border);
-      background:var(--copper-softer);
-      color:var(--text);
-      font-size:12px;
-      padding:7px 10px;
-      outline:none;
-      width:100%;
-    }
-    textarea { border-radius:14px; min-height:64px; resize:vertical; }
-    body:not(.light) input,
-    body:not(.light) textarea,
-    body:not(.light) select {
-      background:rgba(15,23,42,0.9);
-    }
-    input::placeholder, textarea::placeholder { color:var(--muted-soft); }
-    input:focus,textarea:focus,select:focus {
-      border-color:var(--accent);
-      box-shadow:0 0 0 1px var(--copper-strong);
-    }
-
-    /* ✅ Inventory status multi-select */
-    .inv-multi { position: relative; }
-    .inv-multi-btn {
-      width: 100%;
-      text-align: left;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--copper-softer);
-      color: var(--text);
-      font-size: 12px;
-      padding: 7px 10px;
-      cursor: pointer;
-    }
-    body:not(.light) .inv-multi-btn { background: rgba(15,23,42,0.9); }
-    .inv-multi-btn:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--copper-strong);
-    }
-    .inv-multi-menu {
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
-      width: 100%;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      box-shadow: var(--shadow);
-      padding: 6px;
-      display: none;
-      z-index: 25;
-    }
-    .inv-multi.open .inv-multi-menu { display: block; }
-    .inv-multi-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      color: var(--text);
-      cursor: pointer;
-      user-select: none;
-    }
-    .inv-multi-item input { width: 14px; height: 14px; margin: 0; }
-    .inv-multi-item:hover { background: rgba(148,163,184,0.16); }
-
-    .inv-multi-item-all {
-      width: 100%;
-      appearance: none;
-      border: 1px dashed var(--border);
-      background: transparent;
-      justify-content: center;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-    .inv-multi-item-all:hover { background: rgba(148,163,184,0.16); }
-
-    /* Buttons */
-    .btn {
-      border-radius:var(--radius-pill);
-      border:1px solid transparent;
-      background:transparent;
-      color:inherit;
-      padding:7px 11px;
-      font-size:12px;
-      display:inline-flex;
-      align-items:center;
-      gap:5px;
-      cursor:pointer;
-      transition:0.15s ease;
-      white-space: nowrap;
-    }
-    .btn-sm { padding:6px 10px; font-size:11px; }
-    .btn-primary {
-      background:linear-gradient(to right,#b45309,#ea580c);
-      border-color:rgba(187,121,49,0.9);
-      color:#f9fafb;
-    }
-    .btn-primary:hover { filter:brightness(1.03); transform:translateY(-0.5px);}
-    .btn-outline {
-      border-color:rgba(148,163,184,0.7);
-      background:var(--copper-softer);
-      color:#7c2d12;
-    }
-    body:not(.light) .btn-outline {
-      background:rgba(15,23,42,0.85);
-      color:var(--muted);
-    }
-    .btn-outline:hover {
-      background:#e6cdbb;
-      color:#7c2d12;
-    }
-    body:not(.light) .btn-outline:hover {
-      background:rgba(15,23,42,0.95);
+    :root{
+      --bg:#ffffff;
+      --panel:#f6f6f6;
+      --text:#111111;
+      --muted:#6b6b6b;
+      --line:rgba(0,0,0,.10);
+      --shadow: 0 14px 30px rgba(0,0,0,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      background:var(--bg);
       color:var(--text);
     }
-    .btn-ghost {
-      border-color:transparent;
-      background:rgba(249,250,251,0.9);
-      color:#6b7280;
+
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      background:rgba(255,255,255,.82);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
     }
-    body:not(.light) .btn-ghost {
-      background:rgba(15,23,42,0.6);
-      color:var(--muted);
+    .wrap{max-width:1180px; margin:0 auto; padding:14px 16px;}
+    .toprow{display:flex; align-items:center; gap:10px;}
+    .brand{font-weight:1000; letter-spacing:.6px;}
+    .spacer{flex:1}
+    .btn{
+      appearance:none; border:1px solid var(--line);
+      background:#111; color:#fff;
+      padding:10px 12px; border-radius:12px;
+      font-weight:900; cursor:pointer;
+      text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
     }
-    .btn-ghost:hover {
-      background:#e6cdbb;
-      color:#7c2d12;
+    .btn.ghost{background:transparent; color:#111;}
+    .btn:hover{filter:brightness(.97)}
+    .btn:active{transform:translateY(1px)}
+
+    .grid{
+      display:grid; gap:18px;
+      grid-template-columns: 1fr;
+      padding:18px 0 40px;
     }
-    body:not(.light) .btn-ghost:hover {
-      background:rgba(15,23,42,0.9);
-      color:var(--text);
-    }
-    .btn[disabled] {
-      opacity:0.4;
-      cursor:default;
+    @media(min-width:980px){
+      .grid{grid-template-columns: 1.05fr .95fr;}
     }
 
-    .table-wrap {
-      margin-top:6px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      overflow-x:auto;
-      background:var(--copper-softer);
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
     }
-    body:not(.light) .table-wrap {
-      background: radial-gradient(circle at top, rgba(15,23,42,0.85), rgba(15,23,42,0.9));
+    .pad{padding:16px}
+    .title{
+      margin:0;
+      font-size:28px;
+      line-height:1.1;
+      font-weight:950;
+      letter-spacing:-0.4px;
     }
-
-    table {
-      width:100%;
-      border-collapse:collapse;
-      font-size:11px;
-    }
-    table.table-inventory { min-width: 720px; }
-    @media (max-width: 900px) {
-      table.table-inventory { min-width: 640px; }
-    }
-    table.table-cart,
-    table.table-orders {
-      min-width: 0;
-    }
-
-    thead {
-      background: #e6cdbb;
-    }
-    body:not(.light) thead {
-      background:rgba(15,23,42,0.9);
-    }
-    th,td {
-      padding:8px 9px;
-      border-bottom:1px solid rgba(229,231,235,0.9);
-    }
-    body:not(.light) th,body:not(.light) td {
-      border-bottom-color:rgba(15,23,42,0.75);
-    }
-    th {
-      font-size:10px;
-      text-transform:uppercase;
-      letter-spacing:0.12em;
-      text-align:left;
-      color:var(--muted-soft);
-    }
-    th .th-note {
-      display:block;
-      font-size:9px;
-      text-transform:none;
-      letter-spacing:0;
-      color:var(--muted-soft);
-      opacity:0.85;
-    }
-    td { color:var(--text); }
-    tbody tr:nth-child(even) td {
-      background:#f8eee7;
-    }
-    body:not(.light) tbody tr:nth-child(even) td {
-      background:rgba(15,23,42,0.7);
-    }
-    tbody tr:hover td {
-      background:#f1ddd0;
-    }
-    body:not(.light) tbody tr:hover td { background:rgba(15,23,42,0.9); }
-
-    .text-right { text-align:right;}
-    .text-center { text-align:center;}
-
-    .status-chip {
-      display:inline-flex;
-      align-items:center;
-      gap:5px;
-      padding:2px 7px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background:var(--copper-soft);
-      font-size:11px;
-      color:var(--muted);
-    }
-    body:not(.light) .status-chip {
-      background:rgba(15,23,42,0.9);
-    }
-    .status-dot { width:6px;height:6px;border-radius:999px;}
-    .status-Available .status-dot { background:#22c55e;}
-    .status-Low .status-dot { background:#f97316;}
-    .status-Booked .status-dot { background:#ef4444;}
-
-    .inv-check { width:16px; height:16px; cursor:pointer; }
-
-    .inv-actions {
-      text-align:right;
-      white-space:nowrap;
-    }
-    .btn-inv {
-      padding:3px 6px;
-      font-size:10px;
-    }
-    .btn-inv.danger-btn {
-      color:var(--danger);
-    }
-
-    .inv-total-bar {
+    .meta{
       margin-top:10px;
-      display:flex;
-      justify-content:space-between;
-      font-size:11px;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
       color:var(--muted);
-      flex-wrap:wrap;
-      gap:4px;
+      font-size:14px;
+    }
+    .badge{
+      display:inline-flex; align-items:center;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:12px; font-weight:900;
     }
 
-    .cart-summary {
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-end;
-      gap:10px;
-      margin-bottom:10px;
-      font-size:11px;
-      flex-wrap:wrap;
+    /* Pricing */
+    .priceBox{
+      margin-top:14px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
     }
-    .cart-summary strong { font-variant-numeric:tabular-nums; }
-
-    .cart-profit-tag {
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:2px 7px;
+    .priceTop{
+      display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    }
+    .bigPrice{
+      font-size:24px; font-weight:1000; letter-spacing:-0.2px;
+    }
+    .dealPill{
+      display:inline-flex; align-items:center;
+      padding:6px 10px;
       border-radius:999px;
-      font-size:10px;
-      border:1px solid var(--border);
+      border:1px solid var(--line);
+      background:#f7f7f7;
+      font-size:12px; font-weight:950;
     }
-    .cart-profit-tag.profit { background:var(--success-soft); color:var(--success); border-color:rgba(34,197,94,0.6);}
-    .cart-profit-tag.loss { background:var(--danger-soft); color:var(--danger); border-color:rgba(239,68,68,0.6);}
-    .cart-profit-tag.neutral { background:rgba(148,163,184,0.18); color:var(--muted); }
-
-    .orders-profit {
-      font-variant-numeric: tabular-nums;
-      color: var(--text);
+    .priceNote{
+      margin-top:8px;
+      color:#333;
+      font-size:14px;
+      line-height:1.6;
     }
-    .orders-profit.profit-pos { color: var(--success); }
-    .orders-profit.profit-neg { color: var(--danger); }
-
-    .orders-controls {
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:flex-end;
-      font-size:11px;
-      margin-top:6px;
-    }
-    @media (max-width: 640px) {
-      .orders-controls {
-        align-items:flex-start;
-      }
-    }
-
-    /* ✅ Orders calendar (NEW) */
-    .orders-date-wrap { position: relative; }
-    .orders-date-wrap.open .cal-popover { display:block; }
-
-    .cal-popover {
-      position:absolute;
-      top: calc(100% + 6px);
-      left:0;
-      width: 280px;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      box-shadow: var(--shadow);
-      padding: 10px;
-      z-index: 35;
-      display:none;
-    }
-    .cal-header {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-      margin-bottom:8px;
-    }
-    .cal-title {
-      font-size:12px;
-      font-weight:650;
-      letter-spacing:0.02em;
-    }
-    .cal-weekdays, .cal-days {
+    .priceGrid{
+      margin-top:10px;
       display:grid;
-      grid-template-columns: repeat(7,1fr);
-      gap:6px;
+      grid-template-columns: 1fr;
+      gap:8px;
     }
-    .cal-weekdays div {
-      font-size:10px;
-      text-transform:uppercase;
-      letter-spacing:0.1em;
-      color: var(--muted-soft);
-      text-align:center;
-      padding: 2px 0;
+    @media(min-width:520px){
+      .priceGrid{grid-template-columns: 1fr 1fr;}
     }
-    .cal-day {
-      position:relative;
-      border-radius: 12px;
-      border:1px solid transparent;
-      padding:8px 0;
-      text-align:center;
-      cursor:pointer;
+    .priceCard{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+      background:#fff;
+    }
+    .priceCard .label{
+      color:var(--muted);
       font-size:12px;
-      background: rgba(148,163,184,0.10);
+      font-weight:900;
+      letter-spacing:.2px;
+      text-transform:uppercase;
+    }
+    .priceCard .value{
+      margin-top:6px;
+      font-weight:1000;
+      font-size:18px;
+    }
+    .muted{color:var(--muted)}
+    .hr{height:1px; background:var(--line); margin:14px 0}
+    .sectionTitle{font-weight:950; font-size:18px; margin:0 0 10px 0;}
+    .desc{color:#222; line-height:1.7; font-size:15px;}
+    .small{font-size:13px; color:var(--muted)}
+
+    /* Gallery */
+    .gallery{display:grid; gap:12px; padding:16px;}
+    .mainImg{
+      position:relative;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      aspect-ratio: 4/5;
       user-select:none;
     }
-    body:not(.light) .cal-day { background: rgba(148,163,184,0.08); }
-    .cal-day:hover { border-color: rgba(148,163,184,0.5); }
-    .cal-day.muted { opacity: 0.45; }
-    .cal-day.selected {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--copper-strong);
-      background: var(--accent-soft);
-    }
-    .cal-day.today {
-      outline: 2px solid rgba(234,88,12,0.45);
-      outline-offset: -2px;
-    }
-    .cal-dot {
-      position:absolute;
-      bottom:6px;
-      left:50%;
-      transform:translateX(-50%);
-      width:6px;
-      height:6px;
-      border-radius:99px;
-      background: var(--success);
-    }
-    .cal-legend {
-      display:flex;
-      align-items:center;
-      gap:6px;
-      font-size:11px;
-      color: var(--muted);
-      margin-top:8px;
-    }
-    .cal-legend .cal-dot {
-      position:static;
-      transform:none;
-    }
+    .track{height:100%; display:flex; transition: transform .35s ease;}
+    .slide{min-width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#fff;}
+    .slide img{width:100%; height:100%; object-fit:cover; display:block;}
 
-    /* Modal base */
-    .modal-overlay {
-      position:fixed;
-      inset:0;
-      background:rgba(15,23,42,0.9);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:40;
-      padding:18px;
+    .nav{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:space-between;
+      pointer-events:none;
+      padding:0 10px;
     }
-    .modal-overlay.active { display:flex; }
-    .modal {
-      max-width:480px;
-      width:100%;
-      border-radius:18px;
-      border:1px solid var(--border);
-      background:var(--card);
-      box-shadow:var(--shadow);
-      padding:14px 16px 14px;
-    }
-    .modal-header {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-      margin-bottom:8px;
-    }
-    .modal-title {
-      font-size:13px;
-      text-transform:uppercase;
-      letter-spacing:0.12em;
-      font-weight:600;
-    }
-    .modal-sub { font-size:11px; color:var(--muted); }
-    .modal-body { font-size:12px; max-height:70vh; overflow:auto; }
-    .modal-footer {
-      display:flex;
-      justify-content:flex-end;
-      gap:6px;
-      margin-top:8px;
-      font-size:11px;
-    }
-
-    .qty-mode {
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:8px;
-      font-size:12px;
-    }
-    .qty-mode label { display:flex;align-items:center;gap:5px;cursor:pointer;}
-    .qty-row {
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .qty-step {
+    .arrow{
+      pointer-events:auto;
+      width:42px; height:42px;
       border-radius:999px;
-      border:1px solid var(--border);
-      background:var(--copper-softer);
-      color:var(--text);
-      padding:5px 10px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.9);
       cursor:pointer;
+      font-size:22px;
+      display:grid; place-items:center;
     }
-    body:not(.light) .qty-step { background:rgba(15,23,42,0.9); }
-    .qty-row input { max-width:90px; text-align:center; }
+    .dots{
+      position:absolute; left:50%; bottom:10px;
+      transform:translateX(-50%);
+      display:flex; gap:6px;
+      background:rgba(255,255,255,.75);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:6px 8px;
+    }
+    .dot{width:8px; height:8px; border-radius:999px; background:rgba(0,0,0,.25); cursor:pointer;}
+    .dot.active{background:#111}
 
-    /* Timeline for inventory details */
-    .timeline {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      font-size: 12px;
+    .thumbs{display:grid; grid-template-columns: repeat(5, 1fr); gap:8px;}
+    .thumb{
+      aspect-ratio: 1/1;
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#fff;
+      cursor:pointer;
+      opacity:.85;
+      transition: opacity .15s ease, transform .15s ease;
     }
-    .timeline-item {
-      display: flex;
-      gap: 8px;
-      padding: 8px 0;
-      border-bottom: 1px dashed var(--border);
-    }
-    .timeline-item:last-child {
-      border-bottom: none;
-    }
-    .timeline-badge {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--accent);
-      margin-top: 4px;
-      flex-shrink: 0;
-    }
-    .timeline-badge.order { background: #0ea5e9; }
-    .timeline-badge.adjust { background: #22c55e; }
-    .timeline-badge.created { background: #a855f7; }
-    .timeline-content small {
-      display:block;
-      color: var(--muted-soft);
-      margin-bottom: 2px;
-    }
-    .timeline-content strong {
-      display:block;
-      margin-bottom: 2px;
-    }
+    .thumb:hover{opacity:1; transform:translateY(-1px)}
+    .thumb.active{outline:2px solid #111; opacity:1}
+    .thumb img{width:100%; height:100%; object-fit:cover; display:block}
 
-    .header-toggle-btn {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      z-index: 50;
-      width: 40px;
-      height: 40px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.8);
-      background: #f6ebe3;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 14px 32px rgba(148,87,38,0.6);
-      cursor: pointer;
+    /* Video */
+    .videoBox{
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
     }
-    .header-toggle-btn span {
-      width: 0; height: 0;
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      border-bottom: 14px solid #b45309;
+    .videoWrap{
+      position:relative;
+      width:100%;
+      aspect-ratio:16/9;
+      background:#000;
     }
-    body:not(.light) .header-toggle-btn {
-      background:#111827;
-      box-shadow:0 14px 32px rgba(0,0,0,0.7);
-    }
-    body:not(.light) .header-toggle-btn span {
-      border-bottom-color:#ea580c;
+    .videoWrap iframe, .videoWrap video{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      border:0;
     }
 
-    @media (max-width: 768px) {
-      .header-toggle-btn { display:flex; }
+    /* Sizes */
+    .sizes{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    @media(min-width:520px){
+      .sizes{grid-template-columns:1fr 1fr;}
+    }
+    .sizeCard{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+    .sizeName{font-weight:950; margin:0 0 8px 0; font-size:15px;}
+    .sizeList{margin:0; padding-left:18px; color:#222; line-height:1.7; font-size:14px;}
 
-      .header-inner {
-        display:none;
-      }
-      .header.open .header-inner {
-        display:block;
-      }
-
-      .header-inner { padding: 10px 10px 0; }
-      .brand-main { font-size: 18px; }
-      .shell {
-        padding: 64px 10px 28px;
-      }
+    /* FAQ */
+    .faq{display:flex; flex-direction:column; gap:10px;}
+    .faqItem{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      overflow:hidden;
     }
-
-    @media (max-width: 480px) {
-      .logo { width: 40px; height: 40px; }
-      .header-card { padding: 12px 12px; }
-      .profit-row { flex-direction: column; align-items:flex-start; }
-      .header-right { gap:8px; }
-      .card-header { flex-direction: column; align-items:flex-start; }
-      .card { border-radius: 16px; }
-      .table-wrap { border-radius: 12px; }
+    .faqQ{
+      width:100%;
+      padding:14px 14px;
+      background:transparent;
+      border:0;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      font-weight:900;
+      color:#111;
+      text-align:left;
+      font-size:15px;
     }
-
-    /* Login screen */
-    .login-screen {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: radial-gradient(circle at top, rgba(15,23,42,0.96), rgba(15,23,42,0.98));
-      z-index: 100;
+    .faqA{
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .28s ease, padding .18s ease, opacity .2s ease;
+      padding:0 14px;
+      opacity:0;
+      color:#333;
+      line-height:1.65;
+      font-size:14px;
     }
-    .login-card {
-      max-width: 360px;
-      width: 100%;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      box-shadow: var(--shadow);
-      padding: 18px 18px 16px;
-      text-align: left;
+    .faqItem.open .faqA{
+      max-height: 520px;
+      padding:0 14px 14px;
+      opacity:1;
     }
-    .login-logo {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 8px;
+    .plus{
+      width:30px; height:30px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      display:grid; place-items:center;
+      font-weight:950;
+      color:#111;
+      background:#f7f7f7;
+      flex:0 0 auto;
     }
-    .login-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin: 0 0 4px;
-    }
-    .login-sub {
-      margin: 0 0 10px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .login-form .field {
-      margin-bottom: 10px;
-    }
-    .login-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 6px;
-      flex-wrap: wrap;
-    }
-    .login-remember {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: var(--muted-soft);
-      cursor: pointer;
-    }
-    .login-remember input {
-      width: 14px;
-      height: 14px;
-    }
-    .login-error {
-      min-height: 14px;
-      font-size: 11px;
-      color: var(--danger);
-    }
-    .login-note {
-      margin: 4px 0 0;
-      font-size: 10px;
-      color: var(--muted-soft);
-    }
-    /* Hide main app until login */
-    #mainApp {
-      display: none;
-    }
-
-    /* ✅ Order details modal layout fixes */
-    #orderOverlay .modal { max-width: 860px; }
-    .order-top-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .order-mid-grid {
-      display: grid;
-      grid-template-columns: 1.3fr 0.9fr 1.3fr 1.7fr;
-      gap: 10px;
-      margin-top: 10px;
-      align-items: start;
-    }
-    .order-note-field textarea { min-height: 86px; }
-
-    @media (max-width: 900px) {
-      .order-top-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .order-mid-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .order-note-field { grid-column: 1 / -1; }
-    }
-    @media (max-width: 520px) {
-      .order-top-grid { grid-template-columns: 1fr; }
-      .order-mid-grid { grid-template-columns: 1fr; }
-    }
-
-    /* ✅ Light theme (black & white) professional overrides */
-    body.light .header-card {
-      background: #ffffff;
-    }
-    body.light .brand-chip {
-      background: #ffffff;
-      color: #111827;
-      border-color: rgba(17,24,39,0.18);
-    }
-    body.light .status-pill,
-    body.light .pill-soft,
-    body.light .badge-soft {
-      background: #f9fafb;
-      color: #111827;
-      border-color: rgba(17,24,39,0.18);
-    }
-    body.light .btn-outline,
-    body.light .btn-ghost,
-    body.light input[type=text],
-    body.light input[type=number],
-    body.light input[type=date],
-    body.light textarea,
-    body.light select {
-      background: #ffffff;
-      color: #111827;
-      border-color: rgba(17,24,39,0.18);
-    }
-    body.light .btn-primary {
-      background: linear-gradient(to right, #111827, #1f2937);
-      border-color: rgba(17,24,39,0.35);
-    }
-    body.light thead { background: #f3f4f6; }
-    body.light tbody tr:nth-child(even) td { background: #fafafa; }
-    body.light tbody tr:hover td { background: #f3f4f6; }
-    body.light .table-wrap { background: #ffffff; }
-    body.light .logo {
-      background:
-        radial-gradient(circle at 0 0, #ffffff 0, #e5e7eb 40%, transparent 70%),
-        radial-gradient(circle at 100% 0, #9ca3af 0, #4b5563 55%, transparent 75%),
-        radial-gradient(circle at 50% 100%, #111827 0, #111827 60%);
-      border-color: rgba(17,24,39,0.25);
-      box-shadow: 0 14px 32px rgba(17,24,39,0.14);
-    }
-    body.light .logo-triangle {
-      border-bottom-color: #111827;
-      filter: none;
-    }
-
   </style>
 </head>
 
-<body class="light">
-  <!-- LOGIN SCREEN -->
-  <div id="loginScreen" class="login-screen">
-    <div class="login-card">
-      <div class="login-logo">
-        <div class="logo"><span class="logo-triangle"></span></div>
-      </div>
-      <h1 class="login-title">JANAB Dashboard Login</h1>
-      <p class="login-sub">Enter password to manage inventory &amp; orders.</p>
-      <form id="loginForm" class="login-form">
-        <div class="field">
-          <label>Password</label>
-          <input id="loginPassword" type="password" placeholder="•••••••" />
-        </div>
-        <div class="login-row">
-          <label class="login-remember">
-            <input id="loginRemember" type="checkbox" />
-            <span>Remember me on this device</span>
-          </label>
-          <button class="btn btn-primary btn-sm" type="submit">Login</button>
-        </div>
-        <div id="loginError" class="login-error"></div>
-        <p class="login-note">
-          Hint: internal JANAB panel. Please do not share this password.
-        </p>
-      </form>
-    </div>
-  </div>
-
-  <div id="mainApp">
-  <!-- Mobile header toggle button (triangle) -->
-  <button id="headerToggleBtn" class="header-toggle-btn">
-    <span></span>
-  </button>
-
-  <!-- HEADER -->
-  <div class="header">
-    <div class="header-inner">
-      <div class="header-card">
-        <div class="header-left">
-          <div class="logo"><span class="logo-triangle"></span></div>
-          <div class="brand-text">
-            <div class="brand-title-row">
-              <div class="brand-chip">JANAB – Inventory &amp; Orders</div>
-            </div>
-            <div class="brand-main">Clothing stock, live from Google Sheets.</div>
-            <div class="brand-sub">
-              Manage JANAB products, track orders, and watch profit update as orders are delivered,
-              returned, or cancelled.
-            </div>
-            <div class="status-pills">
-              <div class="status-pill new">
-                <span class="status-pill-dot"></span>
-                <span>New</span>
-                <span class="status-count" id="countNew">0</span>
-              </div>
-              <div class="status-pill ready">
-                <span class="status-pill-dot"></span>
-                <span>Ready</span>
-                <span class="status-count" id="countReady">0</span>
-              </div>
-<div class="status-pill dispatched">
-                <span class="status-pill-dot"></span>
-                <span>Dispatched</span>
-                <span class="status-count" id="countDispatched">0</span>
-              </div>
-              <div class="status-pill delivered">
-                <span class="status-pill-dot"></span>
-                <span>Delivered</span>
-                <span class="status-count" id="countDelivered">0</span>
-              </div>
-              <div class="status-pill returned">
-                <span class="status-pill-dot"></span>
-                <span>Returned</span>
-                <span class="status-count" id="countReturned">0</span>
-              </div>
-              <div class="status-pill cancelled">
-                <span class="status-pill-dot"></span>
-                <span>Cancelled</span>
-                <span class="status-count" id="countCancelled">0</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="header-right">
-          <div class="profit-row">
-            <div class="profit-main">
-              <div class="profit-label">Overall Profit</div>
-              <div class="profit-value profit-neutral" id="profitAmountLabel">Rs 0</div>
-              <div class="profit-chip" id="profitChip">
-                <span id="profitChipIcon">◎</span>
-                <span id="profitPercentLabel">0%</span>
-              </div>
-            </div>
-            <div class="profit-sub">
-              <div>Before: <span id="profitBeforeLabel">Rs 0</span></div>
-              <div>After: <span id="profitAfterLabel">Rs 0</span></div>
-            </div>
-          </div>
-          <div class="header-actions">
-            <button class="btn btn-ghost btn-sm" id="themeToggle">◐ Theme</button>
-            <button class="btn btn-outline btn-sm" id="resetAllBtn">⟲ Reset all</button>
-            <button class="btn btn-outline btn-sm" id="notifToggle">🔔 Notifications off</button>
-          </div>
-          <div class="header-meta">
-            <div class="pill-soft">
-              <span class="dot green"></span>
-              <span>Inventory value:</span>
-              <strong id="inventoryValueHeader">Rs 0</strong>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="message-area">
-        <div class="message" id="globalMessage">
-          <span>💡</span><span>Loading from Google Sheet…</span>
-        </div>
+<body>
+  <div class="topbar">
+    <div class="wrap">
+      <div class="toprow">
+        <div class="brand">J△N△B</div>
+        <div class="spacer"></div>
+        <a class="btn ghost" href="#">Back</a>
+        <a class="btn" href="#order">Order Now</a>
       </div>
     </div>
   </div>
 
-  <!-- MAIN -->
-  <div class="shell">
+  <main class="wrap">
     <div class="grid">
-      <!-- LEFT COLUMN: Inventory + Cart -->
-      <div class="col-left">
-        <!-- INVENTORY -->
-        <section class="card">
-          <div class="card-header">
-            <div class="card-title-block">
-              <div class="card-kicker">Inventory</div>
-              <div class="card-title-row">
-                <div class="card-title">JANAB stock</div>
-                <div class="badge-soft" id="inventoryBadge">No products</div>
-              </div>
-              <div class="card-sub">
-                Live inventory status. Quantity shows as <strong>left / total</strong>.
-              </div>
+
+      <!-- LEFT: Gallery -->
+      <section class="card">
+        <div class="gallery">
+          <div class="mainImg" id="mainImg">
+            <div class="track" id="track"></div>
+
+            <div class="nav">
+              <button class="arrow" id="prev" type="button" aria-label="Previous">‹</button>
+              <button class="arrow" id="next" type="button" aria-label="Next">›</button>
             </div>
-            <div>
-              <span class="badge-soft">Products: <span id="inventoryCountLabel">0</span></span>
+
+            <div class="dots" id="dots"></div>
+          </div>
+
+          <div class="thumbs" id="thumbs"></div>
+          <div class="small">Tip: thumbnails pe click kar ke image change kar sakte hain.</div>
+        </div>
+      </section>
+
+      <!-- RIGHT: Details -->
+      <section class="card">
+        <div class="pad">
+          <h1 class="title" id="pTitle">Premium Product Name</h1>
+
+          <div class="meta">
+            <span class="badge">Cash on Delivery</span>
+            <span class="badge">Delivery Charges: 50 PKR</span>
+            <span class="badge">Sizes: Medium / Large</span>
+          </div>
+
+          <!-- PRICE (CLEAR FOR CUSTOMER) -->
+          <div class="priceBox" aria-label="Pricing">
+            <div class="priceTop">
+              <div class="bigPrice">PKR <span id="singlePrice">1200</span> <span class="muted">/ piece</span></div>
+              <div class="dealPill">Buy 2+ → PKR <span id="bulkPrice">1000</span>/piece</div>
+            </div>
+
+            <div class="priceNote">
+              <b>Offer:</b> Agar aap <b>2 ya us se zyada</b> pieces order karein, to price <b>PKR 1000 per piece</b> ho jata hai.
+              <br />
+              <span class="muted">Delivery charges: PKR 50 (separate)</span>
+            </div>
+
+            <div class="priceGrid">
+              <div class="priceCard">
+                <div class="label">1 Piece Price</div>
+                <div class="value">PKR 1200 <span class="muted">/ piece</span></div>
+              </div>
+              <div class="priceCard">
+                <div class="label">2+ Pieces Price</div>
+                <div class="value">PKR 1000 <span class="muted">/ piece</span></div>
+              </div>
             </div>
           </div>
 
-          <!-- Filters + Add inventory + Cart button -->
-          <div class="field-grid" style="margin-bottom:8px;">
-            <div class="field">
-              <label>Search</label>
-              <input id="invSearch" type="text" placeholder="Name / color / size / ID" />
+          <div class="hr"></div>
+
+          <h3 class="sectionTitle">Sizes</h3>
+          <div class="sizes">
+            <div class="sizeCard">
+              <p class="sizeName">Large</p>
+              <ul class="sizeList">
+                <li>Length: 26 inch</li>
+                <li>Chest: 18 inch</li>
+                <li>Arms: 22 inch</li>
+              </ul>
             </div>
 
-            <div class="field">
-              <label>Status</label>
-
-              <!-- ✅ Multi-select status dropdown -->
-              <div class="inv-multi" id="invStatusWrap">
-                <button type="button" id="invStatusBtn" class="inv-multi-btn" aria-haspopup="listbox" aria-expanded="false">
-                  All ▾
-                </button>
-                <div id="invStatusMenu" class="inv-multi-menu" role="listbox" aria-label="Inventory Status Filter">
-                  <button type="button" id="invStatusAll" class="inv-multi-item inv-multi-item-all">All</button>
-
-                  <label class="inv-multi-item">
-                    <input type="checkbox" class="inv-status-check" value="Available" />
-                    <span>Available</span>
-                  </label>
-
-                  <label class="inv-multi-item">
-                    <input type="checkbox" class="inv-status-check" value="Low" />
-                    <span>Low</span>
-                  </label>
-
-                  <label class="inv-multi-item">
-                    <input type="checkbox" class="inv-status-check" value="Booked" />
-                    <span>Booked</span>
-                  </label>
-                </div>
-              </div>
-
-              <!-- ✅ selected-only option -->
-              <label id="invSelectedOnlyWrap"
-                     style="display:none;margin-top:6px;font-size:12px;opacity:.9;cursor:pointer;user-select:none;">
-                <input id="invSelectedOnly" type="checkbox" style="margin-right:6px;vertical-align:middle;">
-                Sirf selected products dikhayein
-              </label>
+            <div class="sizeCard">
+              <p class="sizeName">Medium</p>
+              <ul class="sizeList">
+                <li>Length: 25 inches</li>
+                <li>Chest: 16 inches</li>
+                <li>Arms: 22 inches</li>
+              </ul>
             </div>
+          </div>
 
-            <div class="field" style="display:flex;gap:6px;align-items:flex-end;justify-content:flex-end;">
-              <button type="button" class="btn btn-outline btn-sm" id="invResetFilters">Reset</button>
-              <button type="button" class="btn btn-outline btn-sm" id="addInvBtn">+ Add inventory</button>
-              <button type="button" class="btn btn-primary btn-sm" id="addSelectedToCart">
-                + Cart (selected)
+          <div class="hr"></div>
+
+          <h3 class="sectionTitle">Description</h3>
+          <div class="desc" id="pDesc">
+            Iska stuff <b>Rib Knit</b> hai — ye soft, stretchable aur body-friendly fabric hota hai.
+            Jis tarah images me halki si <b>ribbed lines</b> dikh rahi hain, exact waise hi lines real product me bhi hoti hain.
+            <br><br>
+            <b>Rib Knit ki khas baat:</b>
+            <ul>
+              <li>Stretch bohat smooth hota hai (tight feel nahi deta)</li>
+              <li>Shape lose nahi hoti</li>
+              <li>Daily wear me comfortable rehta hai</li>
+              <li>Fitting naturally achi lagti hai</li>
+            </ul>
+          </div>
+
+          <div class="hr"></div>
+
+          <h3 class="sectionTitle">Product Video</h3>
+          <div class="videoBox">
+            <div class="videoWrap">
+              <iframe
+  id="videoEmbed"
+  src="https://streamable.com/e/9dx0mv"
+  title="Product Video"
+  allow="autoplay; fullscreen; picture-in-picture"
+  allowfullscreen>
+</iframe>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <h3 class="sectionTitle">FAQ</h3>
+          <div class="faq" id="faq">
+            <div class="faqItem">
+              <button class="faqQ" type="button">
+                <span>Cheez wesi hi hogi jesi show ho rahi hai?</span>
+                <span class="plus">+</span>
               </button>
+              <div class="faqA">
+                Bilkul clear baat karun to <b>19–20 ka thoda sa farq</b> ho sakta hai.
+                Quality honestly aap ko <b>over-expect</b> nahi karni chahiye, lekin yeh bhi koi lightweight ya useless cheez nahi hai.
+                <br><br>
+                <b>PKR 1000 ke budget</b> me jo product ka standard hona chahiye, yeh exactly wohi deliver karta hai — <b>stable, wearable aur daily-use friendly</b>.
+                Hamne ye product pehle bhi bohat logon ko diya hai aur reviews honestly bohat ache mile hain.
+              </div>
             </div>
-          </div>
 
-          <!-- Inventory table -->
-          <div class="table-wrap">
-            <table class="table-inventory">
-              <thead>
-                <tr>
-                  <th class="text-center" style="width:26px;">
-                    <input type="checkbox" id="invSelectAll" class="inv-check" />
-                  </th>
-                  <th>ID</th>
-                  <th>Product</th>
-                  <th>Color</th>
-                  <th>Size</th>
-                  <th>
-                    QTY
-                    <div class="th-note">left / total</div>
-                  </th>
-                  <th>Unit cost</th>
-                  <th>Status</th>
-                  <th class="text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="inventoryBody"></tbody>
-            </table>
-          </div>
+            <div class="faqItem">
+              <button class="faqQ" type="button">
+                <span>Delivery charges kitne hain?</span>
+                <span class="plus">+</span>
+              </button>
+              <div class="faqA">
+                Delivery charges <b>50 PKR</b> hain.
+              </div>
+            </div>
 
-          <div class="inv-total-bar">
-            <span>Current stock value (left × unit cost)</span>
-            <span><strong id="inventoryValueFooter">Rs 0</strong></span>
+            <div class="faqItem">
+              <button class="faqQ" type="button">
+                <span>Sizes kaun se available hain?</span>
+                <span class="plus">+</span>
+              </button>
+              <div class="faqA">
+                Is product me sirf <b>Medium</b> aur <b>Large</b> sizes available hain.
+              </div>
+            </div>
+
+            <div class="faqItem">
+              <button class="faqQ" type="button">
+                <span>Cash on Delivery available hai?</span>
+                <span class="plus">+</span>
+              </button>
+              <div class="faqA">
+                Haan, <b>Cash on Delivery</b> available hai.
+              </div>
+            </div>
+
+            <div class="faqItem">
+              <button class="faqQ" type="button">
+                <span>Price zyada kyun show ho raha hai?</span>
+                <span class="plus">+</span>
+              </button>
+              <div class="faqA">
+                Main samajh sakta hoon aap ka point — lekin price ka main reason ye hai ke hum all over Pakistan delivery provide karte hain, wo bhi aap ke ghar tak. Sirf delivery company hi ham se Rs 400 charge karti hai. Agar hum price aur kam kar dein to honestly hamare liye kuch bachta hi nahi — is liye hamne price jitna possible ho sakay utna reasonable rakha hua hai.                 Product ki quality bhi waisi hi hai jaisi is budget me honi chahiye — pehnne ke laayak, good material, aur long-lasting. Is liye overall cheez price ke hisaab se bilkul worth it hai.
+              </div>
+            </div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <div id="order">
+              <a class="btn" href="https://wa.me/923272490992" target="_blank" rel="noopener">
+                Order on WhatsApp
+              </a>
+              <div class="small" style="margin-top:10px;">
+                WhatsApp: 0327-2490992
+              </div>
+            </div>
+
           </div>
         </section>
 
-        <!-- CART + ORDER -->
-        <section class="card">
-          <div class="card-header">
-            <div class="card-title-block">
-              <div class="card-kicker">Cart &amp; Order</div>
-              <div class="card-title-row">
-                <div class="card-title">Cart</div>
-                <div class="badge-soft">
-                  Items: <span id="cartItemsCount">0</span> • Qty: <span id="cartQtyTotal">0</span>
-                </div>
-              </div>
-              <div class="card-sub">
-                Check products above, click <strong>+ Cart (selected)</strong>, set price &amp; place order.
-              </div>
-            </div>
-          </div>
-
-          <div class="cart-summary">
-            <div>
-              <div>Total cost: <strong id="cartTotalCost">0</strong></div>
-              <div>Total sell: <strong id="cartTotalSell">0</strong></div>
-              <div>Delivery (this order): <strong id="cartDelivery">0</strong></div>
-            </div>
-            <div>
-              <div>Projected profit (after delivery)</div>
-              <div style="margin-top:2px;">
-                <strong id="cartTotalProfit">0</strong>
-                <span id="cartProfitTag" class="cart-profit-tag neutral">
-                  <span id="cartProfitTagLabel">Neutral</span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="table-wrap" style="margin-bottom:8px;">
-            <table class="table-cart">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th style="width:120px;">Qty</th>
-                  <th style="width:110px;">Sell / unit</th>
-                  <th style="width:40px;"></th>
-                </tr>
-              </thead>
-              <tbody id="cartBody"></tbody>
-            </table>
-          </div>
-
-          <!-- Order form -->
-          <form id="orderForm">
-            <div class="field-grid">
-              <div class="field">
-                <label>Customer name</label>
-                <input id="cName" type="text" placeholder="Customer" />
-              </div>
-              <div class="field">
-                <label>Phone</label>
-                <input id="cPhone" type="text" placeholder="03XX-XXXXXXX" />
-              </div>
-              <div class="field">
-                <label>City / address</label>
-                <input id="cAddress" type="text" placeholder="Lahore" />
-              </div>
-            </div>
-            <div class="field" style="margin-top:6px;">
-              <label>Order note</label>
-              <textarea id="cNote" placeholder="Any size / color / payment note…"></textarea>
-            </div>
-
-            <!-- Delivery charges input -->
-            <div class="field-grid" style="margin-top:6px;">
-              <div class="field">
-                <label>Delivery charges (this order)</label>
-                <input id="cDelivery" type="number" min="0" step="1" placeholder="200" />
-              </div>
-            </div>
-
-            <div class="field-grid" style="margin-top:6px;">
-              <div class="field" style="align-self:flex-end;">
-                <button type="button" class="btn btn-outline btn-sm" id="clearCartBtn">
-                  Clear cart
-                </button>
-              </div>
-              <div class="field" style="align-self:flex-end;">
-                <button type="button" class="btn btn-ghost btn-sm" id="copyOrderMsgBtn">
-                  Copy order message
-                </button>
-              </div>
-              <div class="field" style="align-self:flex-end;">
-                <button class="btn btn-primary" style="width:100%;">Place order</button>
-              </div>
-            </div>
-          </form>
-        </section>
       </div>
+    </main>
 
-      <!-- RIGHT COLUMN: Orders -->
-      <div class="col-right">
-        <section class="card">
-          <div class="card-header" style="margin-bottom:6px;">
-            <div class="card-title-block">
-              <div class="card-kicker">Orders</div>
-              <div class="card-title-row">
-                <div class="card-title">All orders</div>
-                <div class="badge-soft" id="ordersBadge">No orders</div>
-              </div>
-              <div class="card-sub">
-                Filter by status, date and sort by time. Double-click an order for details.
-              </div>
+    <script>
+      // ====== CHANGE THESE IMAGES ======
+      // Apni product images yahan paste kar dein
+      const IMAGES = [
+        "https://i.ibb.co/mFRvyNpF/Gemini-Generated-Image-b4ahtrb4ahtrb4ah.png",
+        "https://i.ibb.co/4n2T4W3S/Gemini-Generated-Image-fmd2lqfmd2lqfmd2.png",
+        "https://i.ibb.co/3mk7g70V/Gemini-Generated-Image-rdnqknrdnqknrdnq.png",
+        "https://i.ibb.co/Q7Q68L1S/Gemini-Generated-Image-wclm80wclm80wclm.png"
+      ];
 
-              <!-- ✅ Orders controls -->
-              <div class="orders-controls">
-                <div class="field" style="min-width: 220px;">
-                  <label>Search</label>
-                  <input id="ordersSearch" type="text" placeholder="Name / address / order ID / tracking / phone" />
-                </div>
+      // ====== Gallery logic ======
+      const track = document.getElementById("track");
+      const dots = document.getElementById("dots");
+      const thumbs = document.getElementById("thumbs");
+      const prev = document.getElementById("prev");
+      const next = document.getElementById("next");
+      const mainImg = document.getElementById("mainImg");
 
-                <!-- ✅ NEW: Calendar date filter -->
-                <div class="field orders-date-wrap" id="ordersDateWrap" style="min-width: 180px;">
-                  <label>Date</label>
-                  <div style="display:flex; gap:6px; align-items:center;">
-                    <button type="button" class="btn btn-outline btn-sm" id="ordersDateBtn" style="width:100%; justify-content:space-between;">
-                      <span id="ordersDateBtnLabel">All dates</span>
-                      <span>📅</span>
-                    </button>
-                    <button type="button" class="btn btn-ghost btn-sm" id="ordersDateClear" title="Clear date">✕</button>
-                  </div>
+      let index = 0;
 
-                  <div class="cal-popover" id="ordersCalendarPopover" aria-label="Orders calendar">
-                    <div class="cal-header">
-                      <button type="button" class="btn btn-ghost btn-sm" id="calPrev">‹</button>
-                      <div class="cal-title" id="calTitle">Month</div>
-                      <button type="button" class="btn btn-ghost btn-sm" id="calNext">›</button>
-                    </div>
-                    <div class="cal-weekdays" id="calWeekdays"></div>
-                    <div class="cal-days" id="calDays"></div>
-                    <div class="cal-legend">
-                      <span class="cal-dot"></span><span>Days with orders</span>
-                    </div>
-                    <div class="modal-sub" style="margin-top:6px;">Tip: Ctrl click = multi-select • Shift click = range</div>
-                  </div>
-                </div>
+      function render() {
+        track.innerHTML = IMAGES.map(src => `
+          <div class="slide"><img src="${src}" alt="Product image"></div>
+        `).join("");
 
-                <div class="field" style="min-width: 150px;">
-                  <label>Status</label>
-                  <select id="ordersStatusFilter">
-                    <option value="">All</option>
-                    <option value="new">New</option>
-                    <option value="ready">Ready</option>                    <option value="dispatched">Dispatched</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="returned">Returned</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
-                </div>
+        dots.innerHTML = IMAGES.map((_, i) => `
+          <div class="dot ${i === 0 ? "active" : ""}" data-i="${i}"></div>
+        `).join("");
 
-                <div class="field" style="min-width: 150px;">
-                  <label>Sort by time</label>
-                  <select id="ordersSortDir">
-                    <option value="desc">Newest first</option>
-                    <option value="asc">Oldest first</option>
-                  </select>
-                </div>
-
-                <div class="field" style="min-width: 180px;">
-                  <label>Bulk status</label>
-                  <div style="display:flex; gap:6px;">
-                    <select id="ordersBulkStatus">
-                      <option value="">Select</option>
-                      <option value="new">New</option>
-                      <option value="ready">Ready</option>                      <option value="dispatched">Dispatched</option>
-                      <option value="delivered">Delivered</option>
-                      <option value="returned">Returned</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
-                    <button type="button" class="btn btn-outline btn-sm" id="ordersBulkApply">
-                      Apply
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+        thumbs.innerHTML = IMAGES.map((src, i) => `
+          <div class="thumb ${i === 0 ? "active" : ""}" data-i="${i}">
+            <img src="${src}" alt="Thumbnail">
           </div>
+        `).join("");
 
-          <div class="table-wrap">
-            <table class="table-orders">
-              <thead>
-                <tr>
-                  <th class="text-center" style="width:26px;">
-                    <input type="checkbox" id="ordersSelectAll" class="inv-check" />
-                  </th>
-                  <th>Order / Tracking</th>
-                  <th>Customer DETAILS</th>
-                  <th>Status</th>
-                  <th>Total COD</th>
-                  <th class="text-right">Profit</th>
-                </tr>
-              </thead>
-              <tbody id="ordersBody"></tbody>
-            </table>
-          </div>
-        </section>
-      </div>
-    </div>
-  </div>
+        dots.querySelectorAll(".dot").forEach(d => d.addEventListener("click", () => go(+d.dataset.i)));
+        thumbs.querySelectorAll(".thumb").forEach(t => t.addEventListener("click", () => go(+t.dataset.i)));
 
-  <!-- ADD INVENTORY MODAL -->
-  <div class="modal-overlay" id="addInvOverlay">
-    <div class="modal">
-      <div class="modal-header">
-        <div>
-          <div class="modal-title">Add inventory</div>
-          <div class="modal-sub">Add a JANAB product with cost &amp; expenses.</div>
-        </div>
-        <button class="btn btn-ghost btn-sm" id="addInvClose">✕</button>
-      </div>
-      <div class="modal-body">
-        <form id="addProductForm">
-          <div class="field-grid">
-            <div class="field">
-              <label>Product name</label>
-              <input id="pName" type="text" placeholder="JANAB Kurta" required />
-            </div>
-            <div class="field">
-              <label>Color</label>
-              <input id="pColor" type="text" placeholder="Black" required />
-            </div>
-            <div class="field">
-              <label>Size</label>
-              <input id="pSize" type="text" placeholder="M / L / XL" />
-            </div>
-          </div>
-
-          <div class="field-grid" style="margin-top:6px;">
-            <div class="field">
-              <label>Quantity</label>
-              <input id="pQty" type="number" min="1" step="1" placeholder="10" required />
-            </div>
-            <div class="field">
-              <label>Cost / unit (actual)</label>
-              <input id="pCost" type="number" min="0" step="1" placeholder="1200" required />
-            </div>
-            <div class="field">
-              <label>Other expenses / unit</label>
-              <input id="pOther" type="number" min="0" step="1" placeholder="200" />
-            </div>
-            <div class="field">
-              <label>Tax / unit</label>
-              <input id="pTax" type="number" min="0" step="1" placeholder="150" />
-            </div>
-          </div>
-
-          <div class="field-grid" style="margin-top:6px;">
-            <div class="field">
-              <label>Unit cost (auto)</label>
-              <input id="pUnitCost" type="number" readonly />
-            </div>
-            <div class="field">
-              <label>Product code (optional)</label>
-              <input id="pCode" type="text" placeholder="Auto P-0001" />
-            </div>
-            <div class="field" style="align-self:flex-end;">
-              <button type="submit" class="btn btn-primary" style="width:100%;">+ Add to inventory</button>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline btn-sm" id="addInvCancel">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- INVENTORY EDIT MODAL -->
-  <div class="modal-overlay" id="invEditOverlay">
-    <div class="modal">
-      <div class="modal-header">
-        <div>
-          <div class="modal-title">Edit product</div>
-          <div class="modal-sub" id="invEditInfo"></div>
-        </div>
-        <button class="btn btn-ghost btn-sm" id="invEditClose">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="field-grid">
-          <div class="field">
-            <label>Code</label>
-            <input id="invEditCode" type="text" readonly />
-          </div>
-          <div class="field">
-            <label>Name</label>
-            <input id="invEditName" type="text" />
-          </div>
-        </div>
-        <div class="field-grid" style="margin-top:6px;">
-          <div class="field">
-            <label>Color</label>
-            <input id="invEditColor" type="text" />
-          </div>
-          <div class="field">
-            <label>Size</label>
-            <input id="invEditSize" type="text" />
-          </div>
-          <div class="field">
-            <label>Quantity (left)</label>
-            <input id="invEditQty" type="number" min="0" />
-          </div>
-        </div>
-        <div class="field-grid" style="margin-top:6px;">
-          <div class="field">
-            <label>Cost / unit</label>
-            <input id="invEditCost" type="number" min="0" />
-          </div>
-          <div class="field">
-            <label>Other expenses / unit</label>
-            <input id="invEditOther" type="number" min="0" />
-          </div>
-          <div class="field">
-            <label>Tax / unit</label>
-            <input id="invEditTax" type="number" min="0" />
-          </div>
-          <div class="field">
-            <label>Unit cost (auto)</label>
-            <input id="invEditUnit" type="number" readonly />
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline btn-sm" id="invEditCancel">Cancel</button>
-        <button class="btn btn-primary btn-sm" id="invEditSave">Save changes</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- INVENTORY QUANTITY MODAL -->
-  <div class="modal-overlay" id="qtyOverlay">
-    <div class="modal">
-      <div class="modal-header">
-        <div>
-          <div class="modal-title">Adjust quantity</div>
-          <div class="modal-sub" id="qtyInfo"></div>
-        </div>
-        <button class="btn btn-ghost btn-sm" id="qtyClose">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-sub" style="margin-bottom:6px;">
-          Current: <span id="qtyCurrentLeft">0</span> / <span id="qtyCurrentTotal">0</span>
-        </div>
-        <div class="field">
-          <label>What to update?</label>
-          <div class="qty-mode">
-            <label><input type="radio" name="qtyMode" value="both" checked /> Both: left &amp; total</label>
-            <label><input type="radio" name="qtyMode" value="total" /> Only total</label>
-          </div>
-        </div>
-        <div class="field">
-          <label>Change by (delta)</label>
-          <div class="qty-row">
-            <button type="button" class="qty-step" id="qtyMinus">−</button>
-            <input id="qtyDelta" type="number" value="0" />
-            <button type="button" class="qty-step" id="qtyPlus">+</button>
-          </div>
-          <div class="modal-sub" id="qtyPreview" style="margin-top:6px;">New: 0 / 0</div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline btn-sm" id="qtyCancel">Cancel</button>
-        <button class="btn btn-primary btn-sm" id="qtyApply">Apply</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- INVENTORY DETAIL / HISTORY MODAL -->
-  <div class="modal-overlay" id="invDetailOverlay">
-    <div class="modal">
-      <div class="modal-header">
-        <div>
-          <div class="modal-title">Inventory activity</div>
-          <div class="modal-sub" id="invDetailMeta"></div>
-        </div>
-        <button class="btn btn-ghost btn-sm" id="invDetailClose">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-sub" id="invDetailSummary" style="margin-bottom:8px;"></div>
-        <ul class="timeline" id="invDetailList"></ul>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline btn-sm" id="invDetailCloseBtn">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ORDER DETAIL MODAL -->
-  <div class="modal-overlay" id="orderOverlay">
-    <div class="modal">
-      <div class="modal-header">
-        <div>
-          <div class="modal-title">Order details</div>
-          <div class="modal-sub" id="orderSub"></div>
-        </div>
-        <button class="btn btn-ghost btn-sm" id="orderClose">✕</button>
-      </div>
-            <div class="modal-body">
-        <div class="order-top-grid">
-          <div class="field">
-            <label>Order ID</label>
-            <input id="orderIdField" type="text" readonly />
-          </div>
-
-          <div class="field">
-            <label>Status</label>
-            <select id="orderStatusField">
-              <option value="new">New</option>
-              <option value="ready">Ready</option>
-              <option value="dispatched">Dispatched</option>
-              <option value="delivered">Delivered</option>
-              <option value="returned">Returned</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Tracking ID</label>
-            <input id="orderTrackingField" type="text" />
-          </div>
-
-          <div class="field">
-            <label>Created at</label>
-            <input id="orderCreatedAtField" type="text" readonly />
-          </div>
-        </div>
-
-        <div class="order-mid-grid">
-          <div class="field">
-            <label>Customer</label>
-            <input id="orderCustomerField" type="text" />
-          </div>
-
-          <div class="field">
-            <label>Phone</label>
-            <input id="orderPhoneField" type="text" />
-          </div>
-
-          <div class="field">
-            <label>Address</label>
-            <input id="orderAddressField" type="text" />
-          </div>
-
-          <div class="field order-note-field">
-            <label>Note</label>
-            <textarea id="orderNoteField"></textarea>
-          </div>
-        </div>
-
-        <div class="modal-sub" id="orderItemsSummary" style="margin-top:10px;"></div>
-        <div class="modal-sub" id="orderMeta" style="margin-top:4px;"></div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost btn-sm" id="orderCopy">Copy message</button>
-        <button class="btn btn-primary btn-sm" id="orderSave">Save</button>
-      </div>
-    </div>
-  </div>
-  </div> <!-- /#mainApp -->
-
-  <script>
-    // ---------- DOM refs ----------
-    const msgEl = document.getElementById('globalMessage');
-    const inventoryValueHeader = document.getElementById('inventoryValueHeader');
-    const inventoryValueFooter = document.getElementById('inventoryValueFooter');
-    const inventoryBadge = document.getElementById('inventoryBadge');
-    const inventoryCountLabel = document.getElementById('inventoryCountLabel');
-
-    const profitAmountLabel = document.getElementById('profitAmountLabel');
-    const profitBeforeLabel = document.getElementById('profitBeforeLabel');
-    const profitAfterLabel = document.getElementById('profitAfterLabel');
-    const profitPercentLabel = document.getElementById('profitPercentLabel');
-    const profitChip = document.getElementById('profitChip');
-    const profitChipIcon = document.getElementById('profitChipIcon');
-
-    const themeToggle = document.getElementById('themeToggle');
-    const resetAllBtn = document.getElementById('resetAllBtn');
-    const headerToggleBtn = document.getElementById('headerToggleBtn');
-    const headerEl = document.querySelector('.header');
-    const notifToggle = document.getElementById('notifToggle');
-    const loginScreen = document.getElementById('loginScreen');
-    const mainApp = document.getElementById('mainApp');
-    const loginForm = document.getElementById('loginForm');
-    const loginPassword = document.getElementById('loginPassword');
-    const loginRemember = document.getElementById('loginRemember');
-    const loginError = document.getElementById('loginError');
-
-    // Status count spans
-    const countNew = document.getElementById('countNew');
-    const countReady = document.getElementById('countReady');
-    const countDispatched = document.getElementById('countDispatched');
-    const countDelivered = document.getElementById('countDelivered');
-    const countReturned = document.getElementById('countReturned');
-    const countCancelled = document.getElementById('countCancelled');
-
-    // Add product (modal)
-    const pName = document.getElementById('pName');
-    const pColor = document.getElementById('pColor');
-    const pSize = document.getElementById('pSize');
-    const pQty = document.getElementById('pQty');
-    const pCost = document.getElementById('pCost');
-    const pOther = document.getElementById('pOther');
-    const pTax = document.getElementById('pTax');
-    const pUnitCost = document.getElementById('pUnitCost');
-    const pCode = document.getElementById('pCode');
-    const addProductForm = document.getElementById('addProductForm');
-    const addInvOverlay = document.getElementById('addInvOverlay');
-    const addInvBtn = document.getElementById('addInvBtn');
-    const addInvClose = document.getElementById('addInvClose');
-    const addInvCancel = document.getElementById('addInvCancel');
-
-    // Inventory filters & table
-    const invSearch = document.getElementById('invSearch');
-
-    // ✅ inventory status multi-select refs
-    const invStatusWrap = document.getElementById('invStatusWrap');
-    const invStatusBtn = document.getElementById('invStatusBtn');
-    const invStatusMenu = document.getElementById('invStatusMenu');
-    const invStatusAll = document.getElementById('invStatusAll');
-    const invStatusChecks = Array.from(document.querySelectorAll('.inv-status-check'));
-
-    const invResetFilters = document.getElementById('invResetFilters');
-
-    // ✅ selected-only UI refs
-    const invSelectedOnly = document.getElementById('invSelectedOnly');
-    const invSelectedOnlyWrap = document.getElementById('invSelectedOnlyWrap');
-
-    const invSelectAll = document.getElementById('invSelectAll');
-    const inventoryBody = document.getElementById('inventoryBody');
-    const addSelectedToCartBtn = document.getElementById('addSelectedToCart');
-
-    // Cart
-    const cartBody = document.getElementById('cartBody');
-    const cartItemsCount = document.getElementById('cartItemsCount');
-    const cartQtyTotal = document.getElementById('cartQtyTotal');
-    const cartTotalCost = document.getElementById('cartTotalCost');
-    const cartTotalSell = document.getElementById('cartTotalSell');
-    const cartTotalProfit = document.getElementById('cartTotalProfit');
-    const cartProfitTag = document.getElementById('cartProfitTag');
-    const cartProfitTagLabel = document.getElementById('cartProfitTagLabel');
-    const cartDelivery = document.getElementById('cartDelivery');
-
-    // Order form
-    const cName = document.getElementById('cName');
-    const cPhone = document.getElementById('cPhone');
-    const cAddress = document.getElementById('cAddress');
-    const cNote = document.getElementById('cNote');
-    const cDelivery = document.getElementById('cDelivery');
-    const clearCartBtn = document.getElementById('clearCartBtn');
-    const copyOrderMsgBtn = document.getElementById('copyOrderMsgBtn');
-    const orderForm = document.getElementById('orderForm');
-
-    // Orders (full list)
-    const ordersBody = document.getElementById('ordersBody');
-    const ordersBadge = document.getElementById('ordersBadge');
-
-    // ✅ orders search input ref
-    const ordersSearch = document.getElementById('ordersSearch');
-
-    // ✅ NEW: Orders date calendar refs
-    const ordersDateWrap = document.getElementById('ordersDateWrap');
-    const ordersDateBtn = document.getElementById('ordersDateBtn');
-    const ordersDateBtnLabel = document.getElementById('ordersDateBtnLabel');
-    const ordersDateClear = document.getElementById('ordersDateClear');
-    const ordersCalendarPopover = document.getElementById('ordersCalendarPopover');
-    const calPrev = document.getElementById('calPrev');
-    const calNext = document.getElementById('calNext');
-    const calTitle = document.getElementById('calTitle');
-    const calWeekdays = document.getElementById('calWeekdays');
-    const calDays = document.getElementById('calDays');
-
-    const ordersStatusFilter = document.getElementById('ordersStatusFilter');
-    const ordersSortDir = document.getElementById('ordersSortDir');
-    const ordersSelectAll = document.getElementById('ordersSelectAll');
-    const ordersBulkStatus = document.getElementById('ordersBulkStatus');
-    const ordersBulkApply = document.getElementById('ordersBulkApply');
-
-    // Inventory edit modal
-    const invEditOverlay = document.getElementById('invEditOverlay');
-    const invEditInfo = document.getElementById('invEditInfo');
-    const invEditCode = document.getElementById('invEditCode');
-    const invEditName = document.getElementById('invEditName');
-    const invEditColor = document.getElementById('invEditColor');
-    const invEditSize = document.getElementById('invEditSize');
-    const invEditQty = document.getElementById('invEditQty');
-    const invEditCost = document.getElementById('invEditCost');
-    const invEditOther = document.getElementById('invEditOther');
-    const invEditTax = document.getElementById('invEditTax');
-    const invEditUnit = document.getElementById('invEditUnit');
-    const invEditClose = document.getElementById('invEditClose');
-    const invEditCancel = document.getElementById('invEditCancel');
-    const invEditSave = document.getElementById('invEditSave');
-
-    // Qty modal
-    const qtyOverlay = document.getElementById('qtyOverlay');
-    const qtyInfo = document.getElementById('qtyInfo');
-    const qtyCurrentLeft = document.getElementById('qtyCurrentLeft');
-    const qtyCurrentTotal = document.getElementById('qtyCurrentTotal');
-    const qtyDelta = document.getElementById('qtyDelta');
-    const qtyPreview = document.getElementById('qtyPreview');
-    const qtyMinus = document.getElementById('qtyMinus');
-    const qtyPlus = document.getElementById('qtyPlus');
-    const qtyClose = document.getElementById('qtyClose');
-    const qtyCancel = document.getElementById('qtyCancel');
-    const qtyApply = document.getElementById('qtyApply');
-
-    // Inventory detail modal
-    const invDetailOverlay = document.getElementById('invDetailOverlay');
-    const invDetailMeta = document.getElementById('invDetailMeta');
-    const invDetailSummary = document.getElementById('invDetailSummary');
-    const invDetailList = document.getElementById('invDetailList');
-    const invDetailClose = document.getElementById('invDetailClose');
-    const invDetailCloseBtn = document.getElementById('invDetailCloseBtn');
-
-    // Order detail modal
-    const orderOverlay = document.getElementById('orderOverlay');
-    const orderSub = document.getElementById('orderSub');
-    const orderIdField = document.getElementById('orderIdField');
-    const orderStatusField = document.getElementById('orderStatusField');
-        const orderCreatedAtField = document.getElementById('orderCreatedAtField');
-const orderTrackingField = document.getElementById('orderTrackingField');
-    const orderCustomerField = document.getElementById('orderCustomerField');
-    const orderPhoneField = document.getElementById('orderPhoneField');
-    const orderAddressField = document.getElementById('orderAddressField');
-    const orderNoteField = document.getElementById('orderNoteField');
-    const orderItemsSummary = document.getElementById('orderItemsSummary');
-    const orderMeta = document.getElementById('orderMeta');
-    const orderClose = document.getElementById('orderClose');
-    const orderSave = document.getElementById('orderSave');
-    const orderCopy = document.getElementById('orderCopy');
-
-    // ---------- State ----------
-    let inventory = [];
-    let selectedIds = new Set();
-    let invStatusSelected = new Set();
-    let cart = [];
-    let allOrders = [];
-    let selectedOrderIds = new Set();
-
-    let editingProductId = null;
-    let qtyProductId = null;
-    let qtyBaseLeft = 0;
-    let qtyBaseTotal = 0;
-
-    let activeOrderId = null;
-    let activeOrder = null;
-
-    // Notifications + auth
-    let notificationsEnabled = false;
-    let ordersInitialized = false;
-    let knownOrderIds = new Set();
-    let lateNotifiedOrderIds = new Set();
-    let ordersLoading = false;
-
-    // ✅ NEW: Orders date filter state + calendar view
-    let ordersDateFilterKeys = new Set(); // Set<yyyy-mm-dd>
-    let ordersDateAnchorKey = ''; // for Shift range selection
-    let ordersDateKeys = new Set(); // Days that have >= 1 order
-    let calViewYear = null;
-    let calViewMonth = null; // 0-11
-
-    const NOTIF_PREF_KEY = 'janabNotifEnabled';
-    const AUTH_KEY = 'janabDashboardAuth';
-    const LOGIN_PASSWORD = '6654321';
-
-    // ---------- Helpers ----------
-    function showMessage(text, type) {
-      msgEl.classList.remove('success','error');
-      if (type === 'success') msgEl.classList.add('success');
-      if (type === 'error') msgEl.classList.add('error');
-      msgEl.querySelector('span:last-child').textContent = text;
-    }
-
-    function normalizeStatus(s) {
-      let v = String(s || '')
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, '_');
-      // Legacy: if older data contains "dispatched ready", treat it as "ready"
-      if (v === 'dispatched_ready') v = 'ready';
-      return v;
-    }
-
-    function updateSelectedOnlyVisibility() {
-      if (!invSelectedOnlyWrap || !invSelectedOnly) return false;
-
-      const hasAny = selectedIds && selectedIds.size > 0;
-      invSelectedOnlyWrap.style.display = hasAny ? '' : 'none';
-
-      if (!hasAny && invSelectedOnly.checked) {
-        invSelectedOnly.checked = false;
-        return true;
-      }
-      return false;
-    }
-
-    function updateInvStatusLabel() {
-      if (!invStatusBtn) return;
-      const selected = Array.from(invStatusSelected);
-
-      let label = 'All';
-      if (selected.length === 1) label = selected[0];
-      else if (selected.length > 1) label = selected.length + ' selected';
-
-      invStatusBtn.textContent = label + ' ▾';
-      invStatusBtn.setAttribute('aria-expanded', invStatusWrap?.classList.contains('open') ? 'true' : 'false');
-    }
-
-    function closeInvStatusMenu() {
-      if (!invStatusWrap) return;
-      invStatusWrap.classList.remove('open');
-      updateInvStatusLabel();
-    }
-
-    function toggleInvStatusMenu() {
-      if (!invStatusWrap) return;
-      invStatusWrap.classList.toggle('open');
-      updateInvStatusLabel();
-    }
-
-    function setInvStatusAll(silentRender=false) {
-      invStatusSelected.clear();
-      if (invStatusChecks && invStatusChecks.length) {
-        invStatusChecks.forEach(cb => (cb.checked = false));
-      }
-      updateInvStatusLabel();
-      if (!silentRender) renderInventory();
-    }
-
-    function syncInvStatusSelectedFromUI() {
-      invStatusSelected = new Set(
-        (invStatusChecks || [])
-          .filter(cb => cb.checked)
-          .map(cb => cb.value)
-      );
-      updateInvStatusLabel();
-    }
-
-    // ✅ NEW: date key helpers (orders calendar)
-function pad2(n) { return String(n).padStart(2, '0'); }
-
-function dateKeyFromDate(d) {
-  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
-}
-
-function parseKeyToDate(key) {
-  if (!key) return null;
-  const p = String(key).split('-').map(Number);
-  if (p.length !== 3) return null;
-  const d = new Date(p[0], p[1] - 1, p[2]);
-  return isNaN(d.getTime()) ? null : d;
-}
-
-function getOrderTimestampValue(o) {
-  if (!o) return null;
-  return (
-    o.timestamp ??
-    o.createdAt ??
-    o.created_at ??
-    o.created ??
-    o.dateTime ??
-    o.datetime ??
-    o.time ??
-    o.orderTime ??
-    null
-  );
-}
-
-function orderTimestampMs(o) {
-  const v = getOrderTimestampValue(o);
-  if (v == null || v === '') return 0;
-
-  // ISO/date string
-  const d = new Date(v);
-  if (!isNaN(d.getTime())) return d.getTime();
-
-  // numeric timestamp (ms or seconds)
-  const n = Number(v);
-  if (!isNaN(n)) {
-    if (n > 1e12) return n;           // ms
-    if (n > 1e9) return n * 1000;     // seconds
-  }
-  return 0;
-}
-
-function dateKeyFromOrder(o) {
-  const ms = orderTimestampMs(o);
-  if (!ms) return null;
-  return dateKeyFromDate(new Date(ms));
-}
-
-function formatKeyToLabel(key) {
-  if (!key) return 'All dates';
-  const d = parseKeyToDate(key);
-  if (!d) return key;
-  return d.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
-}
-
-function compareKeys(a, b) {
-  // yyyy-mm-dd sorts correctly as strings
-  return String(a).localeCompare(String(b));
-}
-
-function buildRangeKeys(aKey, bKey) {
-  const a = parseKeyToDate(aKey);
-  const b = parseKeyToDate(bKey);
-  if (!a || !b) return [];
-  const start = a <= b ? a : b;
-  const end = a <= b ? b : a;
-
-  const out = [];
-  const cur = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-  while (cur <= end) {
-    out.push(dateKeyFromDate(cur));
-    cur.setDate(cur.getDate() + 1);
-  }
-  return out;
-}
-
-function summarizeSelectedKeys(keysArr) {
-  const keys = [...keysArr].sort(compareKeys);
-  if (!keys.length) return 'All dates';
-  if (keys.length === 1) return formatKeyToLabel(keys[0]);
-
-  // If contiguous range, show "DD Mon – DD Mon (N)"
-  let ok = true;
-  for (let i = 1; i < keys.length; i++) {
-    const prev = parseKeyToDate(keys[i - 1]);
-    const cur = parseKeyToDate(keys[i]);
-    if (!prev || !cur) { ok = false; break; }
-    const p = new Date(prev.getFullYear(), prev.getMonth(), prev.getDate());
-    p.setDate(p.getDate() + 1);
-    if (dateKeyFromDate(p) !== keys[i]) { ok = false; break; }
-  }
-  if (ok) {
-    return `${formatKeyToLabel(keys[0])} – ${formatKeyToLabel(keys[keys.length - 1])} (${keys.length})`;
-  }
-  return `${keys.length} dates selected`;
-}
-
-function updateOrdersDateBtnLabel() {
-  if (!ordersDateBtnLabel) return;
-  const keys = Array.from(ordersDateFilterKeys || []);
-  ordersDateBtnLabel.textContent = keys.length ? summarizeSelectedKeys(keys) : 'All dates';
-  if (ordersDateClear) ordersDateClear.style.display = keys.length ? '' : 'none';
-}
-
-function recomputeOrdersDateKeys() {
-  ordersDateKeys = new Set();
-  (allOrders || []).forEach(o => {
-    const k = dateKeyFromOrder(o);
-    if (k) ordersDateKeys.add(k);
-  });
-}
-
-function monthTitle(y, m) {
-  const d = new Date(y, m, 1);
-  return d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
-}
-
-    function renderOrdersCalendar() {
-      if (!calDays || calViewYear == null || calViewMonth == null) return;
-
-      // Weekdays header once
-      if (calWeekdays && !calWeekdays.dataset.ready) {
-        const labels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-        calWeekdays.innerHTML = '';
-        labels.forEach(l => {
-          const div = document.createElement('div');
-          div.textContent = l;
-          calWeekdays.appendChild(div);
-        });
-        calWeekdays.dataset.ready = '1';
+        go(0, false);
       }
 
-      calTitle.textContent = monthTitle(calViewYear, calViewMonth);
-      calDays.innerHTML = '';
+      function go(i, animate = true) {
+        index = (i + IMAGES.length) % IMAGES.length;
+        if (!animate) track.style.transition = "none";
+        track.style.transform = `translateX(-${index * 100}%)`;
+        if (!animate) requestAnimationFrame(() => track.style.transition = "");
 
-      const first = new Date(calViewYear, calViewMonth, 1);
-      const firstDow = first.getDay(); // 0=Sun
-      const start = new Date(calViewYear, calViewMonth, 1 - firstDow); // start from Sunday
-
-      const todayKey = dateKeyFromDate(new Date());
-
-      for (let i = 0; i < 42; i++) {
-        const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
-        const key = dateKeyFromDate(d);
-
-        const cell = document.createElement('div');
-        cell.className = 'cal-day';
-        cell.textContent = String(d.getDate());
-
-        const inMonth = d.getMonth() === calViewMonth;
-        if (!inMonth) cell.classList.add('muted');
-
-        if (key === todayKey) cell.classList.add('today');
-        if (ordersDateFilterKeys && ordersDateFilterKeys.size && ordersDateFilterKeys.has(key)) cell.classList.add('selected');
-
-        // highlight days that have at least 1 order
-        if (ordersDateKeys && ordersDateKeys.has(key)) {
-          const dot = document.createElement('span');
-          dot.className = 'cal-dot';
-          cell.appendChild(dot);
-        }
-
-        cell.addEventListener('click', (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  const isCtrl = !!(e.ctrlKey || e.metaKey);
-  const isShift = !!e.shiftKey;
-
-  if (isShift && ordersDateAnchorKey) {
-    const range = buildRangeKeys(ordersDateAnchorKey, key);
-    if (isCtrl) {
-      range.forEach(k => ordersDateFilterKeys.add(k));
-    } else {
-      ordersDateFilterKeys = new Set(range);
-    }
-  } else if (isCtrl) {
-    if (ordersDateFilterKeys.has(key)) ordersDateFilterKeys.delete(key);
-    else ordersDateFilterKeys.add(key);
-  } else {
-    ordersDateFilterKeys = new Set([key]);
-  }
-
-  ordersDateAnchorKey = key;
-  updateOrdersDateBtnLabel();
-  renderOrders();
-
-  // keep calendar open for ctrl/shift multi-select
-  if (!isCtrl && !isShift) closeOrdersCalendar();
-  else renderOrdersCalendar();
-});
-
-        calDays.appendChild(cell);
-      }
-    }
-    function openOrdersCalendar() {
-  if (!ordersDateWrap) return;
-  ordersDateWrap.classList.add('open');
-
-  // prefer anchor -> first selected -> today
-  let base = null;
-
-  if (ordersDateAnchorKey) base = parseKeyToDate(ordersDateAnchorKey);
-
-  if (!base && ordersDateFilterKeys && ordersDateFilterKeys.size) {
-    const firstKey = Array.from(ordersDateFilterKeys).sort(compareKeys)[0];
-    base = parseKeyToDate(firstKey);
-  }
-
-  if (!base || isNaN(base.getTime())) base = new Date();
-
-  calViewYear = base.getFullYear();
-  calViewMonth = base.getMonth();
-  renderOrdersCalendar();
-}
-    function closeOrdersCalendar() {
-      if (!ordersDateWrap) return;
-      ordersDateWrap.classList.remove('open');
-    }
-    function toggleOrdersCalendar() {
-      if (!ordersDateWrap) return;
-      if (ordersDateWrap.classList.contains('open')) closeOrdersCalendar();
-      else openOrdersCalendar();
-    }
-
-    function isAuthRemembered() {
-      try { return localStorage.getItem(AUTH_KEY) === '1'; } catch (e) { return false; }
-    }
-
-    function setAuthRemembered(remember) {
-      try {
-        if (remember) localStorage.setItem(AUTH_KEY, '1');
-        else localStorage.removeItem(AUTH_KEY);
-      } catch (e) {}
-    }
-
-    function showApp() {
-      if (loginScreen) loginScreen.style.display = 'none';
-      if (mainApp) mainApp.style.display = 'block';
-    }
-
-    function showLogin() {
-      if (mainApp) mainApp.style.display = 'none';
-      if (loginScreen) loginScreen.style.display = 'flex';
-    }
-
-    function updateNotifToggleLabel() {
-      if (!notifToggle) return;
-      if (typeof Notification === 'undefined') {
-        notifToggle.textContent = '🔔 Not supported';
-        notifToggle.disabled = true;
-        return;
-      }
-      notifToggle.textContent = notificationsEnabled
-        ? '🔔 Notifications on'
-        : '🔔 Notifications off';
-    }
-
-    function loadNotifPreference() {
-      if (!notifToggle) return;
-      try {
-        const saved = localStorage.getItem(NOTIF_PREF_KEY);
-        if (saved === '1' && typeof Notification !== 'undefined') {
-          if (Notification.permission === 'granted') {
-            notificationsEnabled = true;
-          } else {
-            notificationsEnabled = false;
-          }
-        }
-      } catch (e) {}
-      updateNotifToggleLabel();
-    }
-
-    function saveNotifPreference() {
-      try { localStorage.setItem(NOTIF_PREF_KEY, notificationsEnabled ? '1' : '0'); } catch (e) {}
-    }
-
-    async function enableNotifications() {
-      if (typeof Notification === 'undefined') {
-        alert('Your browser does not support notifications.');
-        return;
-      }
-      if (Notification.permission === 'granted') {
-        notificationsEnabled = true;
-        saveNotifPreference();
-        updateNotifToggleLabel();
-        return;
-      }
-      if (Notification.permission === 'denied') {
-        alert('Notifications are blocked in browser settings.');
-        notificationsEnabled = false;
-        saveNotifPreference();
-        updateNotifToggleLabel();
-        return;
-      }
-      const perm = await Notification.requestPermission();
-      notificationsEnabled = perm === 'granted';
-      saveNotifPreference();
-      updateNotifToggleLabel();
-    }
-
-    function canUseNotifications() {
-      return (
-        notificationsEnabled &&
-        typeof Notification !== 'undefined' &&
-        Notification.permission === 'granted'
-      );
-    }
-
-    function isOrderLate(o) {
-      if (!o) return false;
-      const status = normalizeStatus(o.status || 'new');
-      if (!(status === 'new' || status === 'ready' || status === 'dispatched')) return false;
-      const t = orderTimestampMs(o);
-      if (!t) return false;
-      const ageDays = (Date.now() - t) / (1000 * 60 * 60 * 24);
-      return ageDays > 3;
-    }
-
-    function sendNewOrderNotification(order) {
-      if (!canUseNotifications()) return;
-      const title = `New order ${order.orderId || ''}`;
-      const bodyParts = [];
-
-      if (order.customer) bodyParts.push(order.customer);
-      if (order.phone) bodyParts.push(order.phone);
-
-      if (order.items && order.items.length) {
-        const first = order.items[0];
-        const name = first.name || first.id || '';
-        bodyParts.push(
-          'Item: ' + name + (order.items.length > 1 ? ` +${order.items.length - 1} more` : '')
-        );
+        dots.querySelectorAll(".dot").forEach((d, di) => d.classList.toggle("active", di === index));
+        thumbs.querySelectorAll(".thumb").forEach((t, ti) => t.classList.toggle("active", ti === index));
       }
 
-      const totalSell = Number(order.totalSell || 0);
-      const delivery = Number(order.deliveryCharge || 0);
-      const cod = totalSell; // delivery is already balanced in selling price
-      if (cod) bodyParts.push(`COD ~ Rs ${cod.toFixed(0)}`);
-
-      new Notification(title, { body: bodyParts.join(' • ') });
-    }
-
-    function sendLateOrderNotification(order) {
-      if (!canUseNotifications()) return;
-      const title = `Follow-up: order ${order.orderId || ''}`;
-      const body = `${order.customer || 'Customer'} • still ${order.status || 'new'} after 3+ days`;
-      new Notification(title, { body });
-    }
-
-    function getApiUrl() {
-      return 'https://script.google.com/macros/s/AKfycbxhL4JLzUhsw9rAay9Ots0RiUlAFoI8WGf1P6hH2ceyDmvU4Ap69o5EPF0J81zm_3TIQg/exec';
-    }
-
-    async function apiGet(action, extra={}) {
-      const base = getApiUrl();
-      if (!base) throw new Error('API URL not set.');
-      const url = new URL(base);
-      url.searchParams.set('action', action);
-      Object.entries(extra).forEach(([k,v]) => {
-        if (v !== undefined && v !== null) url.searchParams.set(k,String(v));
-      });
-      const res = await fetch(url.toString());
-      if (!res.ok) throw new Error('GET '+action+' failed: '+res.status);
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message || 'Server error');
-      return data;
-    }
-
-    async function apiPost(action, payload = {}) {
-      const base = getApiUrl();
-      if (!base) throw new Error('API URL not set.');
-      const url = new URL(base);
-      url.searchParams.set('action', action);
-      const body = 'payload=' + encodeURIComponent(JSON.stringify(payload));
-      const res = await fetch(url.toString(), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body
-      });
-      if (!res.ok) throw new Error('POST ' + action + ' failed: ' + res.status);
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message || 'Server error');
-      return data;
-    }
-
-    function updateProfitSummary(ps) {
-      if (!ps) {
-        profitAmountLabel.textContent = 'Rs 0';
-        profitBeforeLabel.textContent = 'Rs 0';
-        profitAfterLabel.textContent = 'Rs 0';
-        profitPercentLabel.textContent = '0%';
-        profitChip.classList.remove('loss');
-        profitChipIcon.textContent = '◎';
-        profitAmountLabel.classList.remove('profit-positive','profit-negative','profit-neutral');
-        profitAmountLabel.classList.add('profit-neutral');
-        return;
-      }
-      const before = Number(ps.beforeTotal || 0);
-      const after = Number(ps.afterTotal || 0);
-      const profit = Number(ps.profitAmount || 0);
-      const percent = Number(ps.profitPercent || 0);
-
-      profitAmountLabel.textContent = 'Rs ' + profit.toFixed(0);
-      profitBeforeLabel.textContent = 'Rs ' + before.toFixed(0);
-      profitAfterLabel.textContent = 'Rs ' + after.toFixed(0);
-      profitPercentLabel.textContent = percent.toFixed(1) + '%';
-
-      profitChip.classList.remove('loss');
-      profitAmountLabel.classList.remove('profit-positive','profit-negative','profit-neutral');
-
-      if (profit > 0.5) {
-        profitChipIcon.textContent = '▲';
-        profitAmountLabel.classList.add('profit-positive');
-      } else if (profit < -0.5) {
-        profitChipIcon.textContent = '▼';
-        profitChip.classList.add('loss');
-        profitAmountLabel.classList.add('profit-negative');
-      } else {
-        profitChipIcon.textContent = '◎';
-        profitAmountLabel.classList.add('profit-neutral');
-      }
-    }
-
-    function computeInventoryValue() {
-      let total = 0;
-      inventory.forEach(it => {
-        const left = Number(it.qtyLeft ?? it.qty ?? 0);
-        const unit = Number(
-          it.unitCost ?? (it.costPrice || 0) + (it.taxPerUnit || 0) + (it.otherExpenses || 0)
-        );
-        total += left * unit;
-      });
-      const txt = 'Rs ' + total.toFixed(0);
-      inventoryValueHeader.textContent = txt;
-      inventoryValueFooter.textContent = txt;
-    }
-
-    function recalcAddFormUnitCost() {
-      const c = Number(pCost.value || 0);
-      const t = Number(pTax.value || 0);
-      const o = Number(pOther.value || 0);
-      const u = c + t + o;
-      pUnitCost.value = u ? u.toFixed(0) : '';
-    }
-    function recalcInvEditUnit() {
-      const c = Number(invEditCost.value || 0);
-      const t = Number(invEditTax.value || 0);
-      const o = Number(invEditOther.value || 0);
-      const u = c + t + o;
-      invEditUnit.value = u ? u.toFixed(0) : '';
-    }
-
-    function openAddInvModal() {
-      if (!addInvOverlay) return;
-      if (addProductForm) {
-        addProductForm.reset();
-        recalcAddFormUnitCost();
-      }
-      addInvOverlay.classList.add('active');
-    }
-
-    function closeAddInvModal() {
-      if (!addInvOverlay) return;
-      addInvOverlay.classList.remove('active');
-    }
-
-    function filteredInventory() {
-      const q = (invSearch.value || '').toLowerCase();
-      const statuses = invStatusSelected;
-      const onlySel = !!(invSelectedOnly && invSelectedOnly.checked);
-
-      return inventory.filter(it => {
-        if (statuses && statuses.size && !statuses.has(String(it.status))) return false;
-
-        if (onlySel && !selectedIds.has(it.id)) return false;
-
-        if (!q) return true;
-        const str = (it.id + ' ' + it.name + ' ' + it.color + ' ' + it.size).toLowerCase();
-        return str.includes(q);
-      });
-    }
-
-    function updateSelectAllCheckbox() {
-      const list = filteredInventory();
-      if (!list.length) {
-        invSelectAll.checked = false;
-        invSelectAll.indeterminate = false;
-        return;
-      }
-      let total = list.length;
-      let sel = list.filter(it => selectedIds.has(it.id)).length;
-      invSelectAll.checked = sel === total;
-      invSelectAll.indeterminate = sel > 0 && sel < total;
-    }
-
-    let openMenuEl = null;
-
-    function renderInventory() {
-      const list = filteredInventory();
-      inventoryBody.innerHTML = '';
-      if (!list.length) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = 9;
-        td.textContent = 'No products found.';
-        td.className = 'text-center';
-        tr.appendChild(td);
-        inventoryBody.appendChild(tr);
-      } else {
-        list.forEach(it => {
-          const tr = document.createElement('tr');
-          tr.dataset.id = it.id;
-
-          const left = Number(it.qtyLeft ?? it.qty ?? 0);
-          const total = Number(it.qtyTotal ?? left);
-
-          const tdSel = document.createElement('td');
-          tdSel.className = 'text-center';
-          const cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.className = 'inv-check';
-          cb.checked = selectedIds.has(it.id);
-
-          cb.addEventListener('change', () => {
-            const wasOnlySel = !!(invSelectedOnly && invSelectedOnly.checked);
-
-            if (cb.checked) selectedIds.add(it.id);
-            else selectedIds.delete(it.id);
-
-            const changed = updateSelectedOnlyVisibility();
-
-            if (wasOnlySel || changed) {
-              renderInventory();
-              return;
-            }
-
-            updateSelectAllCheckbox();
-          });
-
-          tdSel.appendChild(cb);
-          tr.appendChild(tdSel);
-
-          const tdId = document.createElement('td'); tdId.textContent = it.id; tr.appendChild(tdId);
-          const tdName = document.createElement('td'); tdName.textContent = it.name; tr.appendChild(tdName);
-          const tdColor = document.createElement('td'); tdColor.textContent = it.color; tr.appendChild(tdColor);
-          const tdSize = document.createElement('td'); tdSize.textContent = it.size; tr.appendChild(tdSize);
-
-          const tdQty = document.createElement('td');
-          tdQty.textContent = left + ' / ' + total;
-          tr.appendChild(tdQty);
-
-          const tdCost = document.createElement('td');
-          const unit = (it.unitCost != null)
-            ? it.unitCost
-            : (it.costPrice || 0) + (it.taxPerUnit || 0) + (it.otherExpenses || 0);
-          tdCost.textContent = Number(unit).toFixed(0);
-          tr.appendChild(tdCost);
-
-          const tdStatus = document.createElement('td');
-          const chip = document.createElement('span');
-          chip.className = 'status-chip status-' + (it.status || '');
-          const dot = document.createElement('span'); dot.className = 'status-dot';
-          const lbl = document.createElement('span'); lbl.textContent = it.status;
-          chip.appendChild(dot); chip.appendChild(lbl);
-          tdStatus.appendChild(chip);
-          tr.appendChild(tdStatus);
-
-          const tdAct = document.createElement('td');
-          tdAct.className = 'inv-actions';
-
-          function makeInvBtn(label, handler, extraClass) {
-            const b = document.createElement('button');
-            b.type = 'button';
-            b.className = 'btn btn-ghost btn-sm btn-inv';
-            if (extraClass) b.classList.add(extraClass);
-            b.textContent = label;
-            b.addEventListener('click', (e) => {
-              e.stopPropagation();
-              handler();
-            });
-            return b;
-          }
-
-          tdAct.appendChild(makeInvBtn('Details', () => openInvDetail(it)));
-          tdAct.appendChild(makeInvBtn('Qty', () => openQtyModal(it)));
-          tdAct.appendChild(makeInvBtn('Edit', () => openInvEdit(it)));
-          tdAct.appendChild(makeInvBtn('Delete', () => handleDeleteProduct(it), 'danger-btn'));
-
-          tr.appendChild(tdAct);
-          inventoryBody.appendChild(tr);
-        });
-      }
-
-      inventoryCountLabel.textContent = inventory.length;
-      inventoryBadge.textContent = inventory.length ? `Live • ${inventory.length} products` : 'No products';
-      computeInventoryValue();
-      updateSelectAllCheckbox();
-      updateSelectedOnlyVisibility();
-    }
-
-    document.addEventListener('click', e => {
-      if (openMenuEl && !openMenuEl.contains(e.target)) {
-        openMenuEl.classList.remove('open');
-        openMenuEl = null;
-      }
-
-      if (invStatusWrap && invStatusWrap.classList.contains('open') && !invStatusWrap.contains(e.target)) {
-        closeInvStatusMenu();
-      }
-
-      // ✅ NEW: close orders calendar on outside click
-      if (ordersDateWrap && ordersDateWrap.classList.contains('open') && !ordersDateWrap.contains(e.target)) {
-        closeOrdersCalendar();
-      }
-    });
-
-    // ---------- Cart ----------
-    function syncCartWithInventory() {
-      cart.forEach(c => {
-        const inv = inventory.find(i => i.id === c.id);
-        if (inv) {
-          const left = Number(inv.qtyLeft ?? inv.qty ?? 0);
-          c.maxQty = left;
-          if (c.qty > left) c.qty = left;
-        }
-      });
-    }
-
-    function renderCart() {
-      syncCartWithInventory();
-      cartBody.innerHTML = '';
-      if (!cart.length) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = 4;
-        td.textContent = 'Cart is empty.';
-        td.className = 'text-center';
-        tr.appendChild(td);
-        cartBody.appendChild(tr);
-      } else {
-        cart.forEach((it, idx) => {
-          const tr = document.createElement('tr');
-
-          const tdItem = document.createElement('td');
-          const t1 = document.createElement('div'); t1.textContent = it.name || '(no name)';
-          const t2 = document.createElement('div'); t2.className='modal-sub';
-          t2.textContent = `${it.id} • ${it.color} / ${it.size}`;
-          tdItem.appendChild(t1); tdItem.appendChild(t2);
-          tr.appendChild(tdItem);
-
-          const tdQty = document.createElement('td');
-          const minus = document.createElement('button');
-          minus.type='button'; minus.className='btn btn-outline btn-sm'; minus.textContent='−';
-          minus.onclick = () => { if (it.qty>1){ it.qty--; renderCart(); } };
-          const input = document.createElement('input');
-          input.type='number'; input.min='1'; input.step='1';
-          input.value = it.qty;
-          input.style.maxWidth='52px';
-          input.onchange = () => {
-            let v = Number(input.value||1);
-            if (v<1) v=1;
-            if (it.maxQty && v>it.maxQty) v=it.maxQty;
-            it.qty = v; renderCart();
-          };
-          const plus = document.createElement('button');
-          plus.type='button'; plus.className='btn btn-outline btn-sm'; plus.textContent='+';
-          plus.onclick = () => { if (!it.maxQty || it.qty<it.maxQty){ it.qty++; renderCart(); } };
-
-          tdQty.appendChild(minus); tdQty.appendChild(input); tdQty.appendChild(plus);
-          tr.appendChild(tdQty);
-
-          const tdSell = document.createElement('td');
-          const sellInput = document.createElement('input');
-          sellInput.type='number'; sellInput.min='0'; sellInput.step='1'; sellInput.placeholder='0';
-          sellInput.value = it.sellPrice || '';
-          sellInput.oninput = () => { it.sellPrice = Number(sellInput.value || 0); updateCartSummary(); };
-          tdSell.appendChild(sellInput);
-          tr.appendChild(tdSell);
-
-          const tdRem = document.createElement('td');
-          tdRem.className='text-right';
-          const rm = document.createElement('button');
-          rm.type='button'; rm.className='btn btn-ghost btn-sm'; rm.textContent='✕';
-          rm.onclick = () => { cart.splice(idx,1); renderCart(); };
-          tdRem.appendChild(rm);
-          tr.appendChild(tdRem);
-
-          cartBody.appendChild(tr);
-        });
-      }
-      updateCartSummary();
-    }
-
-    function updateCartSummary() {
-      let items = cart.length;
-      let qty = cart.reduce((s,c)=>s+(c.qty||0),0);
-      let cost = 0;
-      let sell = 0;
-
-      cart.forEach(c => {
-        const inv = inventory.find(i => i.id === c.id);
-        const unit = inv
-          ? Number(
-              inv.unitCost ?? (inv.costPrice || 0) + (inv.taxPerUnit || 0) + (inv.otherExpenses || 0)
-            )
-          : 0;
-        const q = Number(c.qty||0);
-        const sp = Number(c.sellPrice||0);
-        cost += unit*q;
-        sell += sp*q;
-      });
-
-      const delivery = Number(cDelivery?.value || 0);
-      const profit = sell - cost - delivery;
-
-      cartItemsCount.textContent = items;
-      cartQtyTotal.textContent = qty;
-      cartTotalCost.textContent = cost.toFixed(0);
-      cartTotalSell.textContent = sell.toFixed(0);
-      cartDelivery.textContent = delivery.toFixed(0);
-      cartTotalProfit.textContent = profit.toFixed(0);
-
-      cartProfitTag.classList.remove('profit','loss','neutral');
-      if (profit > 0.5) {
-        cartProfitTag.classList.add('profit');
-        cartProfitTagLabel.textContent = 'Profit';
-      } else if (profit < -0.5) {
-        cartProfitTag.classList.add('loss');
-        cartProfitTagLabel.textContent = 'Loss';
-      } else {
-        cartProfitTag.classList.add('neutral');
-        cartProfitTagLabel.textContent = 'Neutral';
-      }
-    }
-
-    function addToCart(productId, silent=false) {
-      const inv = inventory.find(i => i.id === productId);
-      if (!inv) { if(!silent) showMessage('Product not found in inventory.','error'); return; }
-      const left = Number(inv.qtyLeft ?? inv.qty ?? 0);
-      if (!left) { if(!silent) showMessage('Out of stock.','error'); return; }
-
-      let c = cart.find(x => x.id === productId);
-      if (c) {
-        if (c.qty >= left) {
-          if(!silent) showMessage('Cannot add more, only '+left+' left.','error');
-          return;
-        }
-        c.qty++;
-      } else {
-        cart.push({
-          id: inv.id,
-          name: inv.name,
-          color: inv.color,
-          size: inv.size,
-          qty: 1,
-          maxQty: left,
-          sellPrice: 0
-        });
-      }
-      if (!silent) showMessage('Added to cart: '+inv.id,'success');
-      renderCart();
-    }
-
-    function addSelectedToCart() {
-      const ids = Array.from(selectedIds);
-      if (!ids.length) { showMessage('Select products first.','error'); return; }
-      let added = 0;
-      ids.forEach(id => {
-        const before = cart.length;
-        addToCart(id, true);
-        if (cart.length > before) added++;
-      });
-      if (added) showMessage('Added '+added+' selected product(s) to cart.','success');
-      else showMessage('No items added (maybe out of stock).','error');
-      renderCart();
-    }
-
-    // ---------- Orders ----------
-    function updateStatusCountsFromAll() {
-      const counts = { new:0, ready:0, dispatched:0, delivered:0, returned:0, cancelled:0 };
-      allOrders.forEach(o => {
-        const s = normalizeStatus(o.status || 'new');
-        if (counts[s] !== undefined) counts[s]++;
-      });
-      countNew.textContent = counts.new;
-      countReady.textContent = counts.ready;
-      if (countDispatched) countDispatched.textContent = counts.dispatched;
-      countDelivered.textContent = counts.delivered;
-      countReturned.textContent = counts.returned;
-      countCancelled.textContent = counts.cancelled;
-
-      let delivered = counts.delivered;
-      let returned = counts.returned;
-      let cancelled = counts.cancelled;
-      ordersBadge.textContent = `${delivered} delivered • ${returned} returned • ${cancelled} cancelled`;
-    }
-
-    function computeOrderProfitForDisplay(o) {
-      const status = normalizeStatus(o.status || 'new');
-      const totalCostBefore = Number(o.totalCostBefore || 0);
-      const totalExpenses = Number(o.totalExpenses || 0);
-      const totalCost = Number(
-        o.totalCost != null ? o.totalCost : totalCostBefore + totalExpenses
-      );
-      const totalSell = Number(o.totalSell || 0);
-      const potentialProfit = totalSell - totalCost;
-
-      let profitValue;
-      if (status === 'new' || status === 'ready' || status === 'dispatched') {
-        profitValue = potentialProfit;
-      } else if (status === 'cancelled') {
-        profitValue = 0;
-      } else {
-        const net = Number(o.netProfit != null ? o.netProfit : potentialProfit);
-        profitValue = net;
-      }
-      return profitValue;
-    }
-
-    // ✅ UPDATED: orders filter now includes date + search query
-    function getFilteredSortedOrders() {
-      let list = [...allOrders];
-
-      // date filter (NEW)
-      if (ordersDateFilterKeys && ordersDateFilterKeys.size) {
-        list = list.filter(o => {
-          const k = dateKeyFromOrder(o);
-          return k && ordersDateFilterKeys.has(k);
-        });
-      }
-
-      const status = normalizeStatus(ordersStatusFilter.value || '');
-      if (status) {
-        list = list.filter(o => normalizeStatus(o.status || 'new') === status);
-      }
-
-      const rawQ = (ordersSearch && ordersSearch.value ? ordersSearch.value : '').trim();
-      if (rawQ) {
-        // ✅ Multi-tracking search: paste comma/newline separated Tracking IDs (and/or Order IDs)
-        // Example: KI7517946643, KI7516212889
-        const hasMulti = /[\n,]/.test(rawQ);
-        if (hasMulti) {
-          const tokens = rawQ
-            .split(/[\n,]+/)
-            .map(s => s.trim())
-            .filter(Boolean);
-
-          const set = new Set(tokens.map(t => String(t).toUpperCase()));
-
-          list = list.filter(o => {
-            const tid = String(o.trackingId || '').trim().toUpperCase();
-            const oid = String(o.orderId || '').trim().toUpperCase();
-            return (tid && set.has(tid)) || (oid && set.has(oid));
-          });
-        } else {
-          const q = rawQ.toLowerCase();
-
-          list = list.filter(o => {
-            const items = Array.isArray(o.items) ? o.items : [];
-            const itemsText = items.map(it => {
-              const parts = [it.id, it.name, it.color, it.size].filter(Boolean);
-              return parts.join(' ');
-            }).join(' | ');
-
-            const hay = [
-              o.orderId,
-              o.trackingId,
-              o.customer,
-              o.phone,
-              o.address,
-              o.note,
-              o.status,
-              itemsText
-            ].filter(Boolean).join(' ').toLowerCase();
-
-            return hay.includes(q);
-          });
-        }
-      }
-
-
-      list.sort((a,b) => {
-        const ta = orderTimestampMs(a);
-        const tb = orderTimestampMs(b);
-        if (ordersSortDir.value === 'asc') return ta - tb;
-        return tb - ta;
-      });
-
-      return list;
-    }
-
-    function updateOrdersSelectAllCheckbox() {
-      if (!ordersSelectAll) return;
-      const list = getFilteredSortedOrders();
-      if (!list.length) {
-        ordersSelectAll.checked = false;
-        ordersSelectAll.indeterminate = false;
-        return;
-      }
-      let total = list.length;
-      let sel = list.filter(o => selectedOrderIds.has(o.orderId)).length;
-      ordersSelectAll.checked = sel === total;
-      ordersSelectAll.indeterminate = sel > 0 && sel < total;
-    }
-
-    function renderOrders() {
-      const list = getFilteredSortedOrders();
-      ordersBody.innerHTML = '';
-      if (!list.length) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = 6;
-        td.textContent = allOrders.length ? 'No orders match filters.' : 'No orders yet.';
-        td.className = 'text-center';
-        tr.appendChild(td);
-        ordersBody.appendChild(tr);
-      } else {
-        list.forEach(o => {
-          const tr = document.createElement('tr');
-          tr.style.cursor = 'pointer';
-
-          const statusRaw = String(o.status || 'new').toLowerCase();
-          const statusKey = normalizeStatus(o.status || 'new');
-
-          tr.addEventListener('dblclick', (e) => {
-            if (e.target.tagName.toLowerCase() === 'input') return;
-            openOrderModal(o);
-          });
-
-          const tdSel = document.createElement('td');
-          tdSel.className = 'text-center';
-          const cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.className = 'inv-check';
-          cb.checked = selectedOrderIds.has(o.orderId);
-          cb.addEventListener('change', (e) => {
-            e.stopPropagation();
-            if (cb.checked) selectedOrderIds.add(o.orderId);
-            else selectedOrderIds.delete(o.orderId);
-            updateOrdersSelectAllCheckbox();
-          });
-          tdSel.appendChild(cb);
-          tr.appendChild(tdSel);
-
-          const tdOrder = document.createElement('td');
-          const mainLine = document.createElement('div');
-          mainLine.textContent = o.orderId || '-';
-          const subLine = document.createElement('div');
-          subLine.className = 'modal-sub';
-          subLine.textContent = 'Tracking: ' + (o.trackingId || '—');
-          tdOrder.appendChild(mainLine);
-          tdOrder.appendChild(subLine);
-          tr.appendChild(tdOrder);
-
-          const tdCust = document.createElement('td');
-          const nameLine = document.createElement('div');
-          nameLine.textContent = o.customer || '-';
-
-          const items = o.items || [];
-          let prodText = '';
-          if (items.length) {
-            const first = items[0];
-            const baseName = first.name || first.id || '';
-            if (items.length > 1) {
-              prodText = `${baseName} +${items.length - 1} more`;
-            } else {
-              prodText = baseName;
-            }
-          } else {
-            prodText = '(no items)';
-          }
-          const prodLine = document.createElement('div');
-          prodLine.className = 'modal-sub';
-          prodLine.textContent = prodText;
-
-          const phoneLine = document.createElement('div');
-          phoneLine.className = 'modal-sub';
-          phoneLine.textContent = o.phone ? '📞 ' + o.phone : '📞 —';
-
-          const addrLine = document.createElement('div');
-          addrLine.className = 'modal-sub';
-          addrLine.textContent = o.address ? '📍 ' + o.address : '📍 —';
-
-          tdCust.appendChild(nameLine);
-          tdCust.appendChild(prodLine);
-          tdCust.appendChild(phoneLine);
-          tdCust.appendChild(addrLine);
-          tr.appendChild(tdCust);
-
-          const tdStatus = document.createElement('td');
-          tdStatus.textContent = statusRaw;
-          tr.appendChild(tdStatus);
-
-          const tdCod = document.createElement('td');
-          const totalSell = Number(o.totalSell || 0);
-          const delivery = Number(o.deliveryCharge || 0);
-          const codAmount = totalSell; // delivery is already balanced in selling price
-          tdCod.textContent = 'Rs ' + codAmount.toFixed(0);
-          tr.appendChild(tdCod);
-
-          const tdP = document.createElement('td');
-          tdP.className = 'text-right';
-
-          const profitValue = computeOrderProfitForDisplay(o);
-          const spanProfit = document.createElement('span');
-          spanProfit.className = 'orders-profit';
-          spanProfit.textContent = profitValue.toFixed(0);
-
-          if (statusKey === 'delivered') {
-            if (profitValue > 0.5) {
-              spanProfit.classList.add('profit-pos');
-            } else if (profitValue < -0.5) {
-              spanProfit.classList.add('profit-neg');
-            }
-          } else if (statusKey === 'returned') {
-            spanProfit.classList.add('profit-neg');
-          }
-          tdP.appendChild(spanProfit);
-          tr.appendChild(tdP);
-
-          ordersBody.appendChild(tr);
-        });
-      }
-      updateStatusCountsFromAll();
-      updateOrdersSelectAllCheckbox();
-
-      // if calendar open, refresh highlight/selected
-      if (ordersDateWrap && ordersDateWrap.classList.contains('open')) {
-        renderOrdersCalendar();
-      }
-    }
-
-    async function loadInventory() {
-      try {
-        const data = await apiGet('getInventory');
-        inventory = (data.inventory || []).map(raw => {
-          const costPrice = Number(raw.costPrice || 0);
-          const taxPerUnit = Number(raw.taxPerUnit || raw.tax || 0);
-          const otherExpenses = Number(raw.otherExpenses || 0);
-          const unit = raw.unitCost != null ? Number(raw.unitCost) : costPrice + taxPerUnit + otherExpenses;
-          const left = raw.qtyLeft != null ? Number(raw.qtyLeft) : Number(raw.qty || 0);
-          const total = raw.qtyTotal != null ? Number(raw.qtyTotal) : Number(raw.totalQty || left);
-          const status = raw.status || (left <= 0 ? 'Booked' : left <= 2 ? 'Low' : 'Available');
-          return {
-            id: String(raw.id || ''),
-            name: String(raw.name || ''),
-            color: String(raw.color || ''),
-            size: String(raw.size || ''),
-            qtyLeft: left,
-            qtyTotal: total,
-            status,
-            costPrice,
-            taxPerUnit,
-            otherExpenses,
-            unitCost: unit
-          };
-        });
-        selectedIds = new Set(Array.from(selectedIds).filter(id => inventory.some(i=>i.id===id)));
-        renderInventory();
-        if (data.profitSummary) updateProfitSummary(data.profitSummary);
-        showMessage('Inventory loaded.','');
-      } catch (e) {
-        console.error(e);
-        showMessage(e.message,'error');
-      }
-    }
-
-    async function loadOrders() {
-      if (ordersLoading) return;
-      ordersLoading = true;
-      try {
-        const prevOrders = allOrders || [];
-        const prevIds = new Set(prevOrders.map(o => o.orderId));
-
-        const data = await apiGet('getOrders', { limit: 0 });
-        allOrders = data.orders || [];
-
-        // ✅ NEW: build date set for highlighting
-        recomputeOrdersDateKeys();
-        updateOrdersDateBtnLabel();
-        renderOrders();
-
-        if (data.profitSummary) updateProfitSummary(data.profitSummary);
-
-        if (ordersInitialized && canUseNotifications()) {
-          const newOrders = allOrders.filter(o => o.orderId && !prevIds.has(o.orderId));
-          newOrders.forEach(sendNewOrderNotification);
-
-          allOrders.forEach(o => {
-            if (isOrderLate(o) && o.orderId && !lateNotifiedOrderIds.has(o.orderId)) {
-              sendLateOrderNotification(o);
-              lateNotifiedOrderIds.add(o.orderId);
-            }
-          });
-        }
-
-        if (!ordersInitialized) {
-          knownOrderIds = new Set(allOrders.map(o => o.orderId));
-          lateNotifiedOrderIds = new Set(allOrders.filter(isOrderLate).map(o => o.orderId));
-          ordersInitialized = true;
-        } else {
-          knownOrderIds = new Set(allOrders.map(o => o.orderId));
-        }
-
-        // If calendar open, refresh month view
-        if (ordersDateWrap && ordersDateWrap.classList.contains('open')) {
-          renderOrdersCalendar();
-        }
-      } catch (e) {
-        console.error(e);
-        showMessage(e.message,'error');
-      } finally {
-        ordersLoading = false;
-      }
-    }
-
-    // ---------- Events ----------
-    if (addInvBtn) {
-      addInvBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        openAddInvModal();
-      });
-    }
-
-    if (addInvClose) {
-      addInvClose.addEventListener('click', (e) => {
-        e.preventDefault();
-        closeAddInvModal();
-      });
-    }
-
-    if (addInvCancel) {
-      addInvCancel.addEventListener('click', (e) => {
-        e.preventDefault();
-        closeAddInvModal();
-      });
-    }
-
-    if (addInvOverlay) {
-      addInvOverlay.addEventListener('click', (e) => {
-        if (e.target === addInvOverlay) {
-          closeAddInvModal();
-        }
-      });
-    }
-
-    if (loginForm) {
-      loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const entered = (loginPassword.value || '').trim();
-        if (entered === LOGIN_PASSWORD) {
-          loginError.textContent = '';
-          const remember = loginRemember && loginRemember.checked;
-          setAuthRemembered(remember);
-          showApp();
-          recalcAddFormUnitCost();
-          renderInventory();
-          renderCart();
-          updateOrdersDateBtnLabel();
-          renderOrders();
-          showMessage('Loading from sheet…','');
-          loadInventory();
-          loadOrders();
-        } else {
-          loginError.textContent = 'Wrong password, please try again.';
-        }
-      });
-    }
-
-    pCost.addEventListener('input', recalcAddFormUnitCost);
-    pOther.addEventListener('input', recalcAddFormUnitCost);
-    pTax.addEventListener('input', recalcAddFormUnitCost);
-
-    addProductForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      try {
-        const payload = {
-          name: pName.value.trim(),
-          color: pColor.value.trim(),
-          size: pSize.value.trim(),
-          qty: Number(pQty.value || 0),
-          costPrice: Number(pCost.value || 0),
-          taxPerUnit: Number(pTax.value || 0),
-          otherExpenses: Number(pOther.value || 0),
-          unitCost: Number(pUnitCost.value || 0),
-          code: pCode.value.trim()
-        };
-        const res = await apiPost('addProduct', payload);
-        showMessage(res.message || 'Product added.','success');
-        closeAddInvModal();
-        await loadInventory();
-      } catch (e2) {
-        showMessage(e2.message,'error');
-      }
-    });
-
-    invSearch.addEventListener('input', renderInventory);
-
-    if (invStatusBtn) {
-      invStatusBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleInvStatusMenu();
-      });
-    }
-
-    if (invStatusAll) {
-      invStatusAll.addEventListener('click', (e) => {
-        e.preventDefault();
-        setInvStatusAll();
-        closeInvStatusMenu();
-      });
-    }
-
-    if (invStatusChecks && invStatusChecks.length) {
-      invStatusChecks.forEach(cb => {
-        cb.addEventListener('change', () => {
-          syncInvStatusSelectedFromUI();
-          renderInventory();
+      prev.addEventListener("click", () => go(index - 1));
+      next.addEventListener("click", () => go(index + 1));
+
+      // Swipe support (mobile)
+      let startX = 0, dragging = false;
+      mainImg.addEventListener("touchstart", (e) => { dragging = true; startX = e.touches[0].clientX; }, { passive: true });
+      mainImg.addEventListener("touchend", (e) => {
+        if (!dragging) return;
+        dragging = false;
+        const endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : startX;
+        const dx = endX - startX;
+        const threshold = Math.min(120, mainImg.clientWidth * 0.18);
+        if (dx > threshold) go(index - 1);
+        else if (dx < -threshold) go(index + 1);
+      }, { passive: true });
+
+      // ====== FAQ Accordion ======
+      document.querySelectorAll(".faqItem").forEach(item => {
+        const btn = item.querySelector(".faqQ");
+        const plus = item.querySelector(".plus");
+        btn.addEventListener("click", () => {
+          const open = item.classList.toggle("open");
+          plus.textContent = open ? "−" : "+";
         });
       });
-    }
 
-    if (invSelectedOnly) {
-      invSelectedOnly.addEventListener('change', renderInventory);
-    }
+      render();
 
-    invResetFilters.addEventListener('click', () => {
-      invSearch.value = '';
-      setInvStatusAll(true);
-
-      if (invSelectedOnly) invSelectedOnly.checked = false;
-      if (invSelectedOnlyWrap) invSelectedOnlyWrap.style.display = (selectedIds.size > 0 ? '' : 'none');
-
-      renderInventory();
-    });
-
-    invSelectAll.addEventListener('change', () => {
-      const list = filteredInventory();
-      if (invSelectAll.checked) {
-        list.forEach(it => selectedIds.add(it.id));
-      } else {
-        list.forEach(it => selectedIds.delete(it.id));
-      }
-
-      const changed = updateSelectedOnlyVisibility();
-      if (changed) {
-        renderInventory();
-        return;
-      }
-
-      renderInventory();
-    });
-
-    addSelectedToCartBtn.addEventListener('click', addSelectedToCart);
-
-    clearCartBtn.addEventListener('click', () => {
-      cart = [];
-      if (cDelivery) cDelivery.value = '';
-      renderCart();
-      showMessage('Cart cleared.','');
-    });
-
-    copyOrderMsgBtn.addEventListener('click', async () => {
-      if (!cart.length) { showMessage('Cart empty.','error'); return; }
-      const items = cart.map(c => {
-        const inv = inventory.find(i=>i.id===c.id);
-        return {
-          id: c.id,
-          name: inv ? inv.name : '',
-          color: inv ? inv.color : '',
-          size: inv ? inv.size : '',
-          qty: c.qty
-        };
-      });
-      const order = {
-        customer: cName.value || 'Customer',
-        phone: cPhone.value || '',
-        address: cAddress.value || '',
-        note: cNote.value || '',
-        orderId: '',
-        deliveryCharge: Number(cDelivery.value || 0),
-        items
-      };
-      const msg = buildOrderMessage(order);
-      try {
-        await navigator.clipboard.writeText(msg);
-        showMessage('Order message copied.','success');
-      } catch {
-        showMessage('Unable to copy.','error');
-      }
-    });
-
-    orderForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!cart.length) {
-        showMessage('Add items to cart first.','error');
-        return;
-      }
-      try {
-        const items = cart.map(c => ({
-          id: c.id,
-          qty: c.qty,
-          sellPrice: Number(c.sellPrice || 0)
-        }));
-const nowIso = new Date().toISOString();
-const payload = {
-  customer: cName.value.trim(),
-  phone: cPhone.value.trim(),
-  address: cAddress.value.trim(),
-  note: cNote.value.trim(),
-  deliveryCharge: Number(cDelivery.value || 0),
-  timestamp: nowIso,      // ✅ save date/time in backend
-  createdAt: nowIso,      // (fallback key)
-  items
-};
-        const res = await apiPost('placeOrder', payload);
-        showMessage(res.message || 'Order placed.','success');
-        cart = [];
-        renderCart();
-        orderForm.reset();
-        await loadInventory();
-        await loadOrders();
-      } catch (e2) {
-        showMessage(e2.message,'error');
-      }
-    });
-
-    invEditClose.addEventListener('click', closeInvEdit);
-    invEditCancel.addEventListener('click', closeInvEdit);
-    invEditCost.addEventListener('input', recalcInvEditUnit);
-    invEditOther.addEventListener('input', recalcInvEditUnit);
-    invEditTax.addEventListener('input', recalcInvEditUnit);
-
-    invEditSave.addEventListener('click', async () => {
-      if (!editingProductId) return;
-      try {
-        const payload = {
-          id: invEditCode.value.trim(),
-          name: invEditName.value.trim(),
-          color: invEditColor.value.trim(),
-          size: invEditSize.value.trim(),
-          qty: Number(invEditQty.value || 0),
-          costPrice: Number(invEditCost.value || 0),
-          taxPerUnit: Number(invEditTax.value || 0),
-          otherExpenses: Number(invEditOther.value || 0),
-          unitCost: Number(invEditUnit.value || 0)
-        };
-        const res = await apiPost('updateProduct', payload);
-        showMessage(res.message || 'Product updated.','success');
-        closeInvEdit();
-        await loadInventory();
-      } catch (e2) {
-        showMessage(e2.message,'error');
-      }
-    });
-
-    qtyMinus.addEventListener('click', () => {
-      qtyDelta.value = Number(qtyDelta.value||0) - 1;
-      updateQtyPreview();
-    });
-    qtyPlus.addEventListener('click', () => {
-      qtyDelta.value = Number(qtyDelta.value||0) + 1;
-      updateQtyPreview();
-    });
-    qtyDelta.addEventListener('input', updateQtyPreview);
-    document.querySelectorAll('input[name="qtyMode"]').forEach(r => {
-      r.addEventListener('change', updateQtyPreview);
-    });
-    qtyClose.addEventListener('click', closeQtyModal);
-    qtyCancel.addEventListener('click', closeQtyModal);
-
-    qtyApply.addEventListener('click', async () => {
-      if (!qtyProductId) return;
-      const item = inventory.find(i=>i.id===qtyProductId);
-      if (!item) { showMessage('Product not found.','error'); return; }
-      const delta = Number(qtyDelta.value || 0);
-      const mode = document.querySelector('input[name="qtyMode"]:checked')?.value || 'both';
-
-      let newLeft = qtyBaseLeft;
-      let newTotal = qtyBaseTotal;
-      if (mode === 'both') {
-        newLeft += delta;
-        newTotal += delta;
-      } else {
-        newTotal += delta;
-      }
-      if (newLeft < 0 || newTotal < 0) {
-        showMessage('Resulting quantity cannot be negative.','error');
-        return;
-      }
-
-      try {
-        const payload = {
-          id: item.id,
-          name: item.name,
-          color: item.color,
-          size: item.size,
-          qty: newLeft,
-          qtyLeft: newLeft,
-          qtyTotal: newTotal,
-          costPrice: item.costPrice,
-          taxPerUnit: item.taxPerUnit || 0,
-          otherExpenses: item.otherExpenses,
-          unitCost: item.unitCost
-        };
-        const res = await apiPost('updateProduct', payload);
-        showMessage(res.message || 'Quantity updated.','success');
-        closeQtyModal();
-        await loadInventory();
-        renderCart();
-      } catch (e2) {
-        showMessage(e2.message,'error');
-      }
-    });
-
-    async function openInvDetail(item) {
-      invDetailOverlay.classList.add('active');
-      invDetailMeta.textContent = `${item.id} • ${item.name} • ${item.color} / ${item.size}`;
-      const left = Number(item.qtyLeft ?? item.qty ?? 0);
-      const total = Number(item.qtyTotal ?? left);
-      const unit = Number(
-        item.unitCost || (item.costPrice || 0) + (item.taxPerUnit || 0) + (item.otherExpenses || 0)
-      );
-      invDetailSummary.textContent =
-        `Now: ${left} / ${total} • Unit cost: ${unit.toFixed(0)} ` +
-        `• Value left: Rs ${(left*unit).toFixed(0)}`;
-      invDetailList.innerHTML = '<li class="timeline-item"><div class="timeline-badge"></div><div class="timeline-content"><strong>Loading…</strong></div></li>';
-
-      try {
-        const data = await apiGet('getProductHistory', { productId: item.id });
-        const events = data.events || [];
-        invDetailList.innerHTML = '';
-        if (!events.length) {
-          const li = document.createElement('li');
-          li.className = 'timeline-item';
-          const badge = document.createElement('div');
-          badge.className = 'timeline-badge';
-          const content = document.createElement('div');
-          content.className = 'timeline-content';
-          const strong = document.createElement('strong');
-          strong.textContent = 'No detailed history yet.';
-          const small = document.createElement('small');
-          small.textContent = 'Orders and adjustments will appear here.';
-          content.appendChild(strong);
-          content.appendChild(small);
-          li.appendChild(badge);
-          li.appendChild(content);
-          invDetailList.appendChild(li);
-        } else {
-          events.forEach(ev => {
-            const type = (ev.type || ev.kind || '').toLowerCase();
-            const li = document.createElement('li');
-            li.className = 'timeline-item';
-
-            const badge = document.createElement('div');
-            badge.className = 'timeline-badge';
-            if (type === 'order') badge.classList.add('order');
-            else if (type === 'adjust') badge.classList.add('adjust');
-            else if (type === 'created') badge.classList.add('created');
-
-            const content = document.createElement('div');
-            content.className = 'timeline-content';
-
-            const ts = ev.timestamp || ev.time || ev.ts || '';
-            const tsSmall = document.createElement('small');
-            tsSmall.textContent = ts ? String(ts) : '';
-            content.appendChild(tsSmall);
-
-            const title = document.createElement('strong');
-            if (type === 'order') {
-              const status = ev.status || ev.orderStatus || '';
-              const q = ev.qty != null ? ev.qty : ev.quantity;
-              const oid = ev.orderId || ev.id || '';
-              title.textContent = `Order ${oid || ''} • ${q || '?'} pcs • ${status || ''}`;
-            } else if (type === 'adjust') {
-              const delta = ev.delta != null ? ev.delta : ev.change;
-              title.textContent = `Quantity adjusted (${delta >= 0 ? '+' : ''}${delta || 0})`;
-            } else if (type === 'created') {
-              title.textContent = 'Initial stock created';
-            } else {
-              title.textContent = ev.title || 'Activity';
-            }
-            content.appendChild(title);
-
-            const detailLine = document.createElement('div');
-            detailLine.textContent =
-              ev.details ||
-              ev.note ||
-              ev.description ||
-              ev.summary ||
-              '';
-            if ((ev.left != null || ev.qtyLeft != null) || (ev.total != null || ev.qtyTotal != null)) {
-              const left = ev.left != null ? ev.left : ev.qtyLeft;
-              const total = ev.total != null ? ev.total : ev.qtyTotal;
-              const extra = `Qty: ${left != null ? left : '?'} / ${total != null ? total : '?'}`;
-              detailLine.textContent = (detailLine.textContent ? detailLine.textContent + ' • ' : '') + extra;
-            }
-            if (detailLine.textContent) content.appendChild(detailLine);
-
-            li.appendChild(badge);
-            li.appendChild(content);
-            invDetailList.appendChild(li);
-          });
-        }
-      } catch (e) {
-        console.error(e);
-        invDetailList.innerHTML = '';
-        const li = document.createElement('li');
-        li.className = 'timeline-item';
-        const badge = document.createElement('div');
-        badge.className = 'timeline-badge';
-        const content = document.createElement('div');
-        content.className = 'timeline-content';
-        const strong = document.createElement('strong');
-        strong.textContent = 'Error loading history.';
-        const small = document.createElement('small');
-        small.textContent = e.message || 'Please try again.';
-        content.appendChild(strong);
-        content.appendChild(small);
-        li.appendChild(badge);
-        li.appendChild(content);
-        invDetailList.appendChild(li);
-
-        showMessage(e.message, 'error');
-      }
-    }
-
-    function closeInvDetail() {
-      invDetailOverlay.classList.remove('active');
-      invDetailList.innerHTML = '';
-    }
-
-    function openInvEdit(item) {
-      editingProductId = item.id;
-      invEditCode.value = item.id;
-      invEditName.value = item.name;
-      invEditColor.value = item.color;
-      invEditSize.value = item.size;
-      invEditQty.value = item.qtyLeft ?? item.qty ?? 0;
-      invEditCost.value = item.costPrice || 0;
-      invEditTax.value = item.taxPerUnit || 0;
-      invEditOther.value = item.otherExpenses || 0;
-      recalcInvEditUnit();
-      invEditInfo.textContent = `${item.name} • ${item.color} / ${item.size}`;
-      invEditOverlay.classList.add('active');
-    }
-    function closeInvEdit() {
-      editingProductId = null;
-      invEditOverlay.classList.remove('active');
-    }
-
-    async function handleDeleteProduct(item) {
-      if (!confirm('Delete product '+item.id+' ?')) return;
-      try {
-        const res = await apiPost('deleteProduct', { id: item.id });
-        showMessage(res.message || 'Product deleted.','success');
-        await loadInventory();
-      } catch (e2) {
-        showMessage(e2.message,'error');
-      }
-    }
-
-    function openQtyModal(item) {
-      qtyProductId = item.id;
-      qtyBaseLeft = Number(item.qtyLeft ?? item.qty ?? 0);
-      qtyBaseTotal = Number(item.qtyTotal ?? qtyBaseLeft);
-      qtyInfo.textContent = `${item.id} • ${item.name}`;
-      qtyCurrentLeft.textContent = qtyBaseLeft;
-      qtyCurrentTotal.textContent = qtyBaseTotal;
-      qtyDelta.value = 0;
-      updateQtyPreview();
-      qtyOverlay.classList.add('active');
-    }
-    function closeQtyModal() {
-      qtyProductId = null;
-      qtyOverlay.classList.remove('active');
-    }
-
-    function updateQtyPreview() {
-      const delta = Number(qtyDelta.value || 0);
-      const mode = document.querySelector('input[name="qtyMode"]:checked')?.value || 'both';
-      let newLeft = qtyBaseLeft;
-      let newTotal = qtyBaseTotal;
-      if (mode === 'both') {
-        newLeft += delta;
-        newTotal += delta;
-      } else {
-        newTotal += delta;
-      }
-      qtyPreview.textContent = `New: ${newLeft} / ${newTotal}`;
-    }
-
-    function buildOrderMessage(o) {
-      const customer = o.customer || 'Customer';
-      const lines = [];
-      lines.push(`Dear ${customer},`);
-      lines.push('');
-      lines.push('Your order has been confirmed.');
-      lines.push('');
-      lines.push('Order details:');
-      (o.items || []).forEach(it => {
-        const name = it.name || '';
-        const color = it.color || '';
-        const size = it.size || '';
-        const id = it.id || '';
-        const qty = it.qty || 0;
-        let cs = '';
-        if (color && size) cs = `${color} / ${size}`;
-        else if (color || size) cs = color || size;
-        const parts = [];
-        if (name) parts.push(name);
-        if (cs) parts.push(`(${cs})`);
-        if (id) parts.push(`[${id}]`);
-        lines.push(`- ${parts.join(' ')} x ${qty}`);
-      });
-
-      const delivery = Number(o.deliveryCharge || o.delivery || 0);
-      if (delivery > 0) {
-        lines.push('');
-        lines.push('Delivery charges: Rs ' + delivery.toFixed(0));
-      }
-
-      lines.push('');
-      if (o.phone) lines.push('Contact: ' + o.phone);
-      lines.push('Tracking ID: ' + (o.orderId || 'will be shared soon.'));
-      if (o.note) lines.push('Note: ' + o.note);
-      if (o.address) lines.push('Address: ' + o.address);
-      lines.push('');
-      lines.push('Thanks for choosing JANAB.');
-      return lines.join('\n');
-    }
-
-    function openOrderModal(o) {
-      activeOrderId = o.orderId;
-      activeOrder = o;
-      orderIdField.value = o.orderId || '';
-      orderStatusField.value = String(o.status || 'new').toLowerCase();
-      if (orderCreatedAtField) orderCreatedAtField.value = '';
-      orderTrackingField.value = o.trackingId || '';
-      orderCustomerField.value = o.customer || '';
-      orderPhoneField.value = o.phone || '';
-      orderAddressField.value = o.address || '';
-      orderNoteField.value = o.note || '';
-
-      orderSub.textContent = `${o.customer || 'Customer'} • ${o.phone || 'No phone'}`;
-
-      const q = o.totalQty || (o.items ? o.items.reduce((s, i) => s + (i.qty || 0), 0) : 0);
-      const itemsCount = o.totalItems || (o.items || []).length;
-
-
-      let placedText = '';
-      const tms = orderTimestampMs(o);
-      if (tms) {
-        const dt = new Date(tms);
-        if (!isNaN(dt.getTime())) {
-          placedText = dt.toLocaleString();
-        }
-      }
-
-      if (orderCreatedAtField) orderCreatedAtField.value = placedText || '—';
-
-      const metaParts = [];
-      if (placedText) metaParts.push(`Received: ${placedText}`);
-      metaParts.push(`Items: ${itemsCount}`);
-      metaParts.push(`Qty: ${q}`);
-      orderMeta.textContent = metaParts.join(' • ');
-
-      if (orderItemsSummary) {
-        const items = o.items || [];
-        if (items.length) {
-          const parts = items.map(it => {
-            const name = it.name || it.id || 'Item';
-            const cs = [it.color, it.size].filter(Boolean).join(' / ');
-            const qty = it.qty || 0;
-            return cs ? `${name} (${cs}) x ${qty}` : `${name} x ${qty}`;
-          });
-          orderItemsSummary.textContent = 'Ordered: ' + parts.join(' • ');
-        } else {
-          orderItemsSummary.textContent = 'Ordered: (no items data)';
-        }
-      }
-
-      orderOverlay.classList.add('active');
-    }
-
-    function closeOrderModal() {
-      activeOrderId = null;
-      activeOrder = null;
-      orderOverlay.classList.remove('active');
-    }
-
-    orderClose.addEventListener('click', closeOrderModal);
-    orderSave.addEventListener('click', async () => {
-      if (!activeOrderId) return;
-      try {
-        const payload = {
-          orderId: activeOrderId,
-          status: orderStatusField.value,
-          customer: orderCustomerField.value,
-          phone: orderPhoneField.value,
-          address: orderAddressField.value,
-          note: orderNoteField.value,
-          trackingId: orderTrackingField.value
-        };
-        const res = await apiPost('updateOrder', payload);
-        showMessage(res.message || 'Order updated.','success');
-        closeOrderModal();
-        await loadOrders();
-        await loadInventory();
-      } catch (e2) {
-        showMessage(e2.message,'error');
-      }
-    });
-    orderCopy.addEventListener('click', async () => {
-      if (!activeOrder) return;
-      const msg = buildOrderMessage(activeOrder);
-      try {
-        await navigator.clipboard.writeText(msg);
-        showMessage('Order message copied.','success');
-      } catch {
-        showMessage('Unable to copy.','error');
-      }
-    });
-
-    invDetailClose.addEventListener('click', closeInvDetail);
-    invDetailCloseBtn.addEventListener('click', closeInvDetail);
-
-    // Theme + resetAll + header toggle
-    themeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('light');
-    });
-
-    resetAllBtn.addEventListener('click', async () => {
-      if (!confirm('Reset all inventory and orders?')) return;
-      try {
-        const res = await apiPost('resetAll',{});
-        showMessage(res.message || 'Data reset.','success');
-        inventory = []; cart = []; allOrders = []; selectedOrderIds.clear();
-        ordersDateFilterKeys = new Set();
-        ordersDateAnchorKey = '';
-        recomputeOrdersDateKeys();
-        updateOrdersDateBtnLabel();
-        renderInventory(); renderCart(); renderOrders();
-        updateProfitSummary(null);
-        updateStatusCountsFromAll();
-      } catch (e2) {
-        showMessage(e2.message,'error');
-      }
-    });
-
-    if (notifToggle) {
-      notifToggle.addEventListener('click', () => {
-        if (!notificationsEnabled) {
-          enableNotifications();
-        } else {
-          notificationsEnabled = false;
-          saveNotifPreference();
-          updateNotifToggleLabel();
-        }
-      });
-    }
-
-    headerToggleBtn.addEventListener('click', () => {
-      headerEl.classList.toggle('open');
-    });
-
-    // Profit glow every 5 seconds for 3 seconds
-    setInterval(() => {
-      profitChip.classList.add('glow');
-      setTimeout(() => {
-        profitChip.classList.remove('glow');
-      }, 3000);
-    }, 5000);
-
-    // ✅ Orders search + filters
-    if (ordersSearch) ordersSearch.addEventListener('input', renderOrders);
-    if (ordersStatusFilter) ordersStatusFilter.addEventListener('change', renderOrders);
-    if (ordersSortDir) ordersSortDir.addEventListener('change', renderOrders);
-
-
-// ✅ Orders select-all (missing before)
-if (ordersSelectAll) {
-  ordersSelectAll.addEventListener('change', () => {
-    const list = getFilteredSortedOrders();
-    if (ordersSelectAll.checked) {
-      list.forEach(o => { if (o.orderId) selectedOrderIds.add(o.orderId); });
-    } else {
-      list.forEach(o => { if (o.orderId) selectedOrderIds.delete(o.orderId); });
-    }
-    renderOrders();
-  });
-}
-
-// ✅ Orders bulk status apply (missing before)
-if (ordersBulkApply) {
-  ordersBulkApply.addEventListener('click', async () => {
-    const target = String(ordersBulkStatus.value || '').toLowerCase();
-    if (!target) {
-      showMessage('Select a bulk status first.', 'error');
-      return;
-    }
-    const ids = Array.from(selectedOrderIds || []);
-    if (!ids.length) {
-      showMessage('Select orders first (checkboxes).', 'error');
-      return;
-    }
-    if (!confirm(`Update ${ids.length} order(s) to "${target}"?`)) return;
-
-    const oldText = ordersBulkApply.textContent;
-    ordersBulkApply.disabled = true;
-    ordersBulkApply.textContent = 'Applying…';
-
-    let ok = 0;
-    let fail = 0;
-    for (const orderId of ids) {
-      try {
-        await apiPost('updateOrder', { orderId, status: target });
-        ok += 1;
-      } catch (e) {
-        console.error('Bulk update failed for', orderId, e);
-        fail += 1;
-      }
-    }
-
-    // Clear selection after apply
-    selectedOrderIds.clear();
-    if (ordersSelectAll) {
-      ordersSelectAll.checked = false;
-      ordersSelectAll.indeterminate = false;
-    }
-    ordersBulkStatus.value = '';
-
-    ordersBulkApply.disabled = false;
-    ordersBulkApply.textContent = oldText;
-
-    if (fail) showMessage(`Bulk updated: ${ok} updated, ${fail} failed.`, 'error');
-    else showMessage(`Bulk updated: ${ok} order(s) → ${target}.`, 'success');
-
-    // Refresh data (profit + counts)
-    await loadOrders();
-    await loadInventory();
-  });
-}
-
-    // ✅ NEW: Calendar events
-    updateOrdersDateBtnLabel();
-
-    if (ordersDateBtn) {
-      ordersDateBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleOrdersCalendar();
-      });
-    }
-    if (ordersDateClear) {
-      ordersDateClear.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        ordersDateFilterKeys = new Set();
-        ordersDateAnchorKey = '';
-        updateOrdersDateBtnLabel();
-        renderOrders();
-        if (ordersDateWrap && ordersDateWrap.classList.contains('open')) renderOrdersCalendar();
-      });
-    }
-    if (calPrev) {
-      calPrev.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (calViewYear == null || calViewMonth == null) return;
-        calViewMonth -= 1;
-        if (calViewMonth < 0) { calViewMonth = 11; calViewYear -= 1; }
-        renderOrdersCalendar();
-      });
-    }
-    if (calNext) {
-      calNext.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (calViewYear == null || calViewMonth == null) return;
-        calViewMonth += 1;
-        if (calViewMonth > 11) { calViewMonth = 0; calViewYear += 1; }
-        renderOrdersCalendar();
-      });
-    }
-
-    // ---------- INIT ----------
-    (function init() {
-      if (notifToggle) {
-        loadNotifPreference();
-      }
-      if (isAuthRemembered()) {
-        showApp();
-        recalcAddFormUnitCost();
-        renderInventory();
-        renderCart();
-        updateOrdersDateBtnLabel();
-        renderOrders();
-        showMessage('Loading from sheet…','');
-        loadInventory();
-        loadOrders();
-      } else {
-        showLogin();
-      }
-    })();
-  </script>
+      // OPTIONAL QUICK EDITS:
+      // document.getElementById("pTitle").textContent = "Your Product Name";
+      // document.getElementById("videoEmbed").src = "https://www.youtube.com/embed/VIDEO_ID";
+    </script>
 </body>
 </html>
+
+	
